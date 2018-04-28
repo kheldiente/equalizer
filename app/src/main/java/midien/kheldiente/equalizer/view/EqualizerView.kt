@@ -1,14 +1,10 @@
 package midien.kheldiente.equalizer.view
 
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
 import android.view.ViewGroup
 import android.widget.SeekBar
 import kotlin.collections.ArrayList
-import android.graphics.drawable.shapes.OvalShape
-import android.graphics.drawable.ShapeDrawable
-import android.view.View
 import midien.kheldiente.equalizer.R
 
 
@@ -20,6 +16,8 @@ class EqualizerView @JvmOverloads constructor(
 ): ViewGroup(context, attrs, defStyle, defStyleRes) {
 
     private var bandSize = 3
+    private var progressDrawable = 0
+    private var thumb = 0;
 
     private val bandList: ArrayList<BandView> = ArrayList(bandSize)
 
@@ -31,6 +29,8 @@ class EqualizerView @JvmOverloads constructor(
                     0)
             // Get set attr value for bands
             bandSize = typedArray.getInteger(R.styleable.EqualizerView_bands, bandSize)
+            progressDrawable = typedArray.getResourceId(R.styleable.EqualizerView_progressDrawable, R.drawable.seekbar_style)
+            thumb = typedArray.getResourceId(R.styleable.EqualizerView_thumb, R.drawable.custom_thumb)
             typedArray.recycle()
 
             initDefaults()
@@ -38,12 +38,11 @@ class EqualizerView @JvmOverloads constructor(
     }
 
     private fun initDefaults() {
-        // Set canvas styles here
-        // setBackgroundColor(Color.BLACK)
-
         // Add default (3) band views
         for(i in 1..bandSize) {
             val bv = BandView(context)
+            bv.progressDrawable = resources.getDrawable(progressDrawable, null)
+            bv.thumb = resources.getDrawable(thumb, null)
             // Add to list for reference
             bandList.add(bv)
             // Add to display
@@ -71,18 +70,10 @@ class EqualizerView @JvmOverloads constructor(
         var right = distW * (bandSize - 1) - paddingW
         var bottom = distH * (bandSize - 1) - paddingH
 
-        for((i, band) in bandList.withIndex()) {
+        for(band in bandList) {
             band.layout(left, top, right, bottom)
             left += distW
             right += distW
-
-            when(i) {
-            /*0 -> band.setBackgroundColor(Color.GREEN)
-            1 -> band.setBackgroundColor(Color.YELLOW)
-            2 -> band.setBackgroundColor(Color.RED)
-            3 -> band.setBackgroundColor(Color.WHITE)
-            4 -> band.setBackgroundColor(Color.BLUE)*/
-            }
         }
     }
 
@@ -96,26 +87,14 @@ class EqualizerView @JvmOverloads constructor(
     ): SeekBar(context, attrs, defStyle, defStyleRes) {
 
         private val VERTICAL = 270f
-        private val WIDTH = 50
         private val MAX = 50
+        private val PROGRESS = 25
 
         init {
             rotation = VERTICAL
             max = MAX
-
-            val thumb = ShapeDrawable(OvalShape())
-
-            thumb.intrinsicHeight = 80
-            thumb.intrinsicWidth = 30
-            setThumb(thumb)
-            progress = 1
-            visibility = View.VISIBLE
-            setBackgroundColor(Color.BLUE)
-
-            val lp = LayoutParams(50, 100)
-            layoutParams = lp
-
-            setPadding(20, 20, 0, 20)
+            // Init progress
+            progress = PROGRESS
         }
     }
 
