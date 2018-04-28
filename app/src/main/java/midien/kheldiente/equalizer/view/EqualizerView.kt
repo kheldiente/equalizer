@@ -69,14 +69,15 @@ class EqualizerView @JvmOverloads constructor(
         // Because the band is ROTATED 270 degrees!
         setBandsVertically(w, h)
         bandConnectorLayout?.layout(0, 0, w, h)
+        bandConnectorLayout?.connect(bandList)
     }
 
     private fun setBandsVertically(width: Int, height: Int) {
         // TODO This method only works on 3 bands! Make it flexible by using other numbers!
         val distW = width / bandSize
         val distH = height / bandSize
-        val paddingH = 20
-        val paddingW = 20
+        val paddingH = 0
+        val paddingW = 0
         var left = -distW + paddingW
         var top = distH + paddingH
         var right = distW * (bandSize - 1) - paddingW
@@ -150,14 +151,15 @@ class EqualizerView @JvmOverloads constructor(
                 val tag = band.tag
                 val bounds = band.thumb.bounds
                 val x = bounds.centerX().toFloat()
-                // val y = (band.width.toFloat() / bandList.size) * index
-                val y = (band.width.toFloat() / bandList.size) * (index + 1)
-
+                var y = (band.width.toFloat() / bandList.size) * index
                 Log.d(TAG, String.format("tag: %s, x: %s, y: %s", tag, x, y))
                 if(index == 0) {
-                    path.moveTo(0f, height.toFloat() - x)
+                    path.moveTo(100f, height.toFloat() - x)
                     // break
                 } else {
+                    val next = (band.width.toFloat() / bandList.size) * (index + 1)
+                    val diff = next - y - 80
+                    y += diff
                     path.lineTo(y, height.toFloat() - x)
                 }
             }
