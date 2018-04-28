@@ -1,10 +1,7 @@
 package midien.kheldiente.equalizer.view
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Path
+import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
@@ -12,8 +9,6 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import kotlin.collections.ArrayList
 import midien.kheldiente.equalizer.R
-import kotlin.properties.Delegates
-
 
 class EqualizerView @JvmOverloads constructor(
         context: Context,
@@ -25,12 +20,15 @@ class EqualizerView @JvmOverloads constructor(
     private val TAG = EqualizerView::class.java.simpleName
 
     private var bandSize = 0
+    private var bandConnectorSize = 0
     private var progressDrawable = 0
     private var thumb = 0
 
     private val bandList: ArrayList<BandView> = ArrayList(bandSize)
+    private var bandConnectorLayout: BandConnectorLayout? = null
 
     init {
+        setBackgroundColor(Color.BLACK)
         attrs?.let {
             val typedArray = context.theme.obtainStyledAttributes(attrs,
                     R.styleable.EqualizerView,
@@ -59,6 +57,10 @@ class EqualizerView @JvmOverloads constructor(
             // Add to display
             addView(bv)
         }
+
+        bandConnectorLayout = BandConnectorLayout(context)
+        addView(bandConnectorLayout)
+
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -66,6 +68,7 @@ class EqualizerView @JvmOverloads constructor(
         // the one to manipulate is not the height, but the WIDTH!
         // Because the band is ROTATED 270 degrees!
         setBandsVertically(w, h)
+        bandConnectorLayout?.layout(0, 0, w, h)
     }
 
     private fun setBandsVertically(width: Int, height: Int) {
@@ -89,11 +92,8 @@ class EqualizerView @JvmOverloads constructor(
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {}
 
     override fun onProgressChanged(seekbar: SeekBar?, progress: Int, fromUser: Boolean) {
-        val bv = seekbar as BandView
-        val tag = bv.tag
-        val thumbX = bv.getThumbX()
-        val middle = bv.getMiddle()
-        Log.d(TAG, String.format("tag: %s, thumbX: %s, middle: %s", tag, thumbX, middle))
+        // Redraw band connector path
+        bandConnectorLayout?.connect(bandList)
     }
 
     override fun onStartTrackingTouch(seekbar: SeekBar?) {}
@@ -107,14 +107,12 @@ class EqualizerView @JvmOverloads constructor(
             defStyleRes: Int = 0
     ): SeekBar(context, attrs, defStyle, defStyleRes) {
 
-        private val VERTICAL = 270f
+        private val VERTICAL = 270f // default: 270f
         private val MAX = 50
         private val PROGRESS = 25
 
-        private var thumbX: Double = 0.0
-        private var middle: Double = 0.0
-
         init {
+            setBackgroundColor(Color.BLUE)
             rotation = VERTICAL
             max = MAX
             // Init progress
@@ -123,26 +121,17 @@ class EqualizerView @JvmOverloads constructor(
 
         override fun onDraw(canvas: Canvas?) {
             super.onDraw(canvas)
-            thumbX = ((progress.toDouble() / max.toDouble()) * width.toDouble())
-            middle = (height / 2.0)
         }
-
-        fun getThumbX(): Double {
-           return thumbX
-        }
-
-        fun getMiddle(): Double {
-            return middle
-        }
-
     }
 
-    inner class BandConnectorView @JvmOverloads constructor(
+    inner class BandConnectorLayout @JvmOverloads constructor(
             context: Context,
             attrs: AttributeSet? = null,
             defStyle: Int = 0,
             defStyleRes: Int = 0
     ): View(context, attrs, defStyle, defStyleRes) {
+
+        private val TAG = BandConnectorLayout::class.java.simpleName;
 
         private var paint: Paint = Paint()
         private var path: Path = Path()
@@ -154,9 +143,34 @@ class EqualizerView @JvmOverloads constructor(
             paint.style = Paint.Style.STROKE
         }
 
-        fun connect(startX: Float, startY: Float, endX: Float, endY: Float) {
-            path.moveTo(startX, startY)
-            path.lineTo(endX, endY)
+        fun connect(bandList: ArrayList<BandView>) {
+            // Redraw path
+            path.reset()
+            for((index, band) in bandList.withIndex()) {
+                val tag = band.tag
+                val bounds = band.thumb.bounds
+                val x = bounds.centerX().toFloat()
+                // val y = (band.width.toFloat() / bandList.size) * index
+                val y = (band.width.toFloat() / bandList.size) * (index + 1)
+
+                Log.d(TAG, String.format("tag: %s, x: %s, y: %s", tag, x, y))
+                if(index == 0) {
+                    path.moveTo(0f, height.toFloat() - x)
+                    // break
+                } else {
+                    path.lineTo(y, height.toFloat() - x)
+                }
+            }
+            invalidate()
+        }
+
+        override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+            super.onLayout(changed, left, top, right, bottom)
+        }
+
+        override fun onDraw(canvas: Canvas?) {
+            super.onDraw(canvas)
+            canvas?.drawPath(path, paint)
         }
     }
 
