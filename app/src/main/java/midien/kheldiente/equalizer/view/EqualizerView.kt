@@ -73,16 +73,14 @@ class EqualizerView @JvmOverloads constructor(
         // TODO This method only works on 3 bands! Make it flexible by using other numbers!
         val distW = width / bandSize
         val distH = height / bandSize
-        val paddingH = 0
-        val paddingW = 0
-        var left = (-height / 2 + (distW / 2)) + paddingH
-        var right = (height / 2 + (distW / 2)) - paddingH
+        var left = (-height / 2 + (distW / 2))
+        var right = (height / 2 + (distW / 2))
 
-        for((index, band) in bandList.withIndex()) {
+        for(band in bandList) {
             // Calculate height of band
             val forceBandHeight = PixelUtil.dpToPx(context, 20f)
-            val top = ((height / 2 - forceBandHeight) + paddingH).toInt()
-            val bottom = ((height / 2 + forceBandHeight) - paddingH).toInt()
+            val top = ((height / 2 - forceBandHeight)).toInt()
+            val bottom = ((height / 2 + forceBandHeight)).toInt()
 
             band.layout(left, top, right, bottom)
             left += distW
@@ -136,7 +134,7 @@ class EqualizerView @JvmOverloads constructor(
         init {
             // Init paint
             paint.color = Color.GREEN
-            paint.strokeWidth = PixelUtil.dpToPx(context, 10f)
+            paint.strokeWidth = PixelUtil.dpToPx(context, 5f)
             paint.style = Paint.Style.STROKE
         }
 
@@ -144,16 +142,15 @@ class EqualizerView @JvmOverloads constructor(
             // Redraw path
             path.reset()
             for((index, band) in bandList.withIndex()) {
-                val tag = band.tag
                 val bounds = band.thumb.bounds
+                var distW = width.toFloat() / bandList.size
                 val x = bounds.centerX().toFloat()
-                var y = (band.width.toFloat() / bandList.size) * (index + 1)
+                var y: Float
                 if(index == 0) {
-                    path.moveTo(50f, height.toFloat())
-                    path.lineTo(50f, x)
-                    break
+                    y = (distW / 2) * (index + 1)
+                    path.moveTo(y, height.toFloat() - x)
                 } else {
-                    y -= 100f
+                    y = ((distW) * (index + 1)) - (distW / 2)
                     path.lineTo(y, height.toFloat() - x)
                 }
             }
