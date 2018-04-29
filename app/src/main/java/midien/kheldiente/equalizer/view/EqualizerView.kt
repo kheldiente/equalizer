@@ -3,7 +3,6 @@ package midien.kheldiente.equalizer.view
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
@@ -20,7 +19,6 @@ class EqualizerView @JvmOverloads constructor(
     private val TAG = EqualizerView::class.java.simpleName
 
     private var bandSize = 0
-    private var bandConnectorSize = 0
     private var progressDrawable = 0
     private var thumb = 0
 
@@ -28,7 +26,6 @@ class EqualizerView @JvmOverloads constructor(
     private var bandConnectorLayout: BandConnectorLayout? = null
 
     init {
-        setBackgroundColor(Color.BLACK)
         attrs?.let {
             val typedArray = context.theme.obtainStyledAttributes(attrs,
                     R.styleable.EqualizerView,
@@ -60,7 +57,6 @@ class EqualizerView @JvmOverloads constructor(
 
         bandConnectorLayout = BandConnectorLayout(context)
         addView(bandConnectorLayout)
-
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -78,10 +74,10 @@ class EqualizerView @JvmOverloads constructor(
         val distH = height / bandSize
         val paddingH = 0
         val paddingW = 0
-        var left = -distW + paddingW
-        var top = distH + paddingH
-        var right = distW * (bandSize - 1) - paddingW
-        var bottom = distH * (bandSize - 1) - paddingH
+        var left = (-width / 2 + distW) + paddingW
+        var top = (height / 2 - distH) + paddingH
+        var right = (width / 2) - paddingW
+        var bottom = (height / 2 + distH) - paddingH
 
         for(band in bandList) {
             band.layout(left, top, right, bottom)
@@ -113,16 +109,12 @@ class EqualizerView @JvmOverloads constructor(
         private val PROGRESS = 25
 
         init {
-            setBackgroundColor(Color.BLUE)
             rotation = VERTICAL
             max = MAX
             // Init progress
             progress = PROGRESS
          }
 
-        override fun onDraw(canvas: Canvas?) {
-            super.onDraw(canvas)
-        }
     }
 
     inner class BandConnectorLayout @JvmOverloads constructor(
@@ -151,21 +143,18 @@ class EqualizerView @JvmOverloads constructor(
                 val tag = band.tag
                 val bounds = band.thumb.bounds
                 val x = bounds.centerX().toFloat()
-                var y = (band.width.toFloat() / bandList.size) * index
-                Log.d(TAG, String.format("tag: %s, x: %s, y: %s", tag, x, y))
+                var y = (band.width.toFloat() / bandList.size) * (index + 1)
                 if(index == 0) {
                     path.moveTo(100f, height.toFloat() - x)
                     // break
                 } else {
-                    val next = (band.width.toFloat() / bandList.size) * (index + 1)
-                    val diff = next - y - 80
-                    y += diff
+                    y -= 100f
                     path.lineTo(y, height.toFloat() - x)
                 }
             }
             invalidate()
         }
-        
+
         override fun onDraw(canvas: Canvas?) {
             super.onDraw(canvas)
             canvas?.drawPath(path, paint)
