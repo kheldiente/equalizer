@@ -143,15 +143,16 @@ class EqualizerView @JvmOverloads constructor(
             path.reset()
             for((index, band) in bandList.withIndex()) {
                 val bounds = band.thumb.bounds
+                val offset = bounds.width() / 2
                 var distW = width.toFloat() / bandList.size
                 val x = bounds.centerX().toFloat()
                 var y: Float
                 if(index == 0) {
                     y = (distW / 2) * (index + 1)
-                    path.moveTo(y, height.toFloat() - x)
+                    path.moveTo(y, (height.toFloat() - x) + offset)
                 } else {
                     y = ((distW) * (index + 1)) - (distW / 2)
-                    path.lineTo(y, height.toFloat() - x)
+                    path.lineTo(y, (height.toFloat() - x) + offset)
                 }
             }
             invalidate()
