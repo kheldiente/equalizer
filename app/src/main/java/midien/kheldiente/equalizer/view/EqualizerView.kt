@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import kotlin.collections.ArrayList
 import midien.kheldiente.equalizer.R
+import midien.kheldiente.equalizer.util.PixelUtil
 
 class EqualizerView @JvmOverloads constructor(
         context: Context,
@@ -74,12 +75,15 @@ class EqualizerView @JvmOverloads constructor(
         val distH = height / bandSize
         val paddingH = 0
         val paddingW = 0
-        var left = (-width / 2 + distW) + paddingW
-        var top = (height / 2 - distH) + paddingH
-        var right = (width / 2) - paddingW
-        var bottom = (height / 2 + distH) - paddingH
+        var left = (-height / 2 + (distW / 2)) + paddingH
+        var right = (height / 2 + (distW / 2)) - paddingH
 
-        for(band in bandList) {
+        for((index, band) in bandList.withIndex()) {
+            // Calculate height of band
+            val forceBandHeight = PixelUtil.dpToPx(context, 20f)
+            val top = ((height / 2 - forceBandHeight) + paddingH).toInt()
+            val bottom = ((height / 2 + forceBandHeight) - paddingH).toInt()
+
             band.layout(left, top, right, bottom)
             left += distW
             right += distW
@@ -132,7 +136,7 @@ class EqualizerView @JvmOverloads constructor(
         init {
             // Init paint
             paint.color = Color.GREEN
-            paint.strokeWidth = 10f
+            paint.strokeWidth = PixelUtil.dpToPx(context, 10f)
             paint.style = Paint.Style.STROKE
         }
 
@@ -145,8 +149,9 @@ class EqualizerView @JvmOverloads constructor(
                 val x = bounds.centerX().toFloat()
                 var y = (band.width.toFloat() / bandList.size) * (index + 1)
                 if(index == 0) {
-                    path.moveTo(100f, height.toFloat() - x)
-                    // break
+                    path.moveTo(50f, height.toFloat())
+                    path.lineTo(50f, x)
+                    break
                 } else {
                     y -= 100f
                     path.lineTo(y, height.toFloat() - x)
