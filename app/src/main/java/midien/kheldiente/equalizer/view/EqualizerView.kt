@@ -81,7 +81,8 @@ class EqualizerView @JvmOverloads constructor(
             val forceBandHeight = PixelUtil.dpToPx(context, 20f)
             val top = ((height / 2 - forceBandHeight)).toInt()
             val bottom = ((height / 2 + forceBandHeight)).toInt()
-
+            // Draw bandview ALWAYS IN FRONT!
+            band.bringToFront()
             band.layout(left, top, right, bottom)
             left += distW
             right += distW
