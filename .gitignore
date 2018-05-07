@@ -54,3 +54,19 @@ freeline.py
 freeline/
 freeline_project_description.json
 *.xml___jb_tmp___
+
+# Force monitor these folders
+# Do not filter folders and files below this
+!app/src/main/res/drawable/*xml
+!app/src/main/res/drawable-v24/*xml
+!app/src/main/res/layout/*xml
+!app/src/main/res/menu/*xml
+!app/src/main/res/mipmap-anydpi-v26/*xml
+!app/src/main/res/mipmap-hdpi/*xml
+!app/src/main/res/mipmap-mdpi/*xml
+!app/src/main/res/mipmap-xhdpi/*xml
+!app/src/main/res/mipmap-xxhdpi/*xml
+!app/src/main/res/mipmap-xxxhdpi/*xml
+!app/src/main/res/values/*xml
+!app/src/main/*xml
+
