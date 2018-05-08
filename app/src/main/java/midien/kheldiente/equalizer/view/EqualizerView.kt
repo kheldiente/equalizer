@@ -50,8 +50,8 @@ class EqualizerView @JvmOverloads constructor(
         // Add default (3) band views
         for(index in 1..bandSize) {
             val bv = BandView(context)
-            bv.progressDrawable = resources.getDrawable(progressDrawable)
-            bv.thumb = resources.getDrawable(thumb)
+            bv.progressDrawable = resources.getDrawable(progressDrawable, null)
+            bv.thumb = resources.getDrawable(thumb, null)
             bv.tag = index
             bv.setOnSeekBarChangeListener(this)
             // Add to list for reference
@@ -62,6 +62,7 @@ class EqualizerView @JvmOverloads constructor(
 
         bandConnectorLayout = BandConnectorLayout(context)
         addView(bandConnectorLayout)
+
         bandConnectorShadow = BandConnectorShadow(context)
         addView(bandConnectorShadow)
     }
