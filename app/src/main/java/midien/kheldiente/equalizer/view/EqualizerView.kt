@@ -23,6 +23,7 @@ class EqualizerView @JvmOverloads constructor(
     private val TAG = EqualizerView::class.java.simpleName
 
     private val BAND_NAME_HEIGHT = 30f
+    private val BAND_PADDING = 20
 
     private var bandSize = 0
     private var progressDrawable = 0
@@ -59,6 +60,10 @@ class EqualizerView @JvmOverloads constructor(
             bv.progressDrawable = resources.getDrawable(progressDrawable, null)
             bv.thumb = resources.getDrawable(thumb, null)
             bv.tag = index
+            bv.setPadding(PixelUtil.dpToPx(context, BAND_PADDING).toInt(),
+                    0,
+                    PixelUtil.dpToPx(context, BAND_PADDING).toInt(),
+                    0)
             bv.setOnSeekBarChangeListener(this)
             // Add to list for reference
             bandList.add(bv)
@@ -203,7 +208,8 @@ class EqualizerView @JvmOverloads constructor(
             path.reset()
             for((index, band) in bandList.withIndex()) {
                 val bounds = band.thumb.bounds
-                val offset = (bounds.width() / 2) - PixelUtil.dpToPx(context, BAND_NAME_HEIGHT * 2).toInt()
+                val offset = (bounds.width() / 2) - PixelUtil.dpToPx(context, BAND_NAME_HEIGHT * 2).toInt() - PixelUtil.dpToPx(context, BAND_PADDING)
+
                 var distW = width.toFloat() / bandList.size
                 val x = bounds.centerX().toFloat()
                 var y: Float
@@ -282,7 +288,7 @@ class EqualizerView @JvmOverloads constructor(
 
             for((index, band) in bandList.withIndex()) {
                 val bounds = band.thumb.bounds
-                val offset = (bounds.width() / 2) - PixelUtil.dpToPx(context, BAND_NAME_HEIGHT * 2).toInt()
+                val offset = (bounds.width() / 2) - PixelUtil.dpToPx(context, BAND_NAME_HEIGHT * 2).toInt() - PixelUtil.dpToPx(context, BAND_PADDING).toInt()
                 var distW = width.toFloat() / bandList.size
                 val x = bounds.centerX().toFloat()
                 var y: Float
