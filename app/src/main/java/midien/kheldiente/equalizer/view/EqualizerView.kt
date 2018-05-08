@@ -25,6 +25,7 @@ class EqualizerView @JvmOverloads constructor(
 
     private val bandList: ArrayList<BandView> = ArrayList(bandSize)
     private var bandConnectorLayout: BandConnectorLayout? = null
+    private var bandConnectorShadow: BandConnectorShadow? = null
 
     init {
         attrs?.let {
@@ -43,6 +44,9 @@ class EqualizerView @JvmOverloads constructor(
     }
 
     private fun initDefaults() {
+        // call onDraw() to setup grid lines
+        setWillNotDraw(false)
+
         // Add default (3) band views
         for(index in 1..bandSize) {
             val bv = BandView(context)
@@ -58,9 +62,8 @@ class EqualizerView @JvmOverloads constructor(
 
         bandConnectorLayout = BandConnectorLayout(context)
         addView(bandConnectorLayout)
-
-        // To call onDraw()
-        setWillNotDraw(false)
+        bandConnectorShadow = BandConnectorShadow(context)
+        addView(bandConnectorShadow)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -70,6 +73,10 @@ class EqualizerView @JvmOverloads constructor(
         setBandsVertically(w, h)
         bandConnectorLayout?.layout(0, 0, w, h)
         bandConnectorLayout?.connect(bandList)
+
+        // Layout and draw band connector shadow
+        bandConnectorShadow?.layout(0, 0, w, h)
+        bandConnectorShadow?.draw(bandList)
     }
 
     private fun setBandsVertically(width: Int, height: Int) {
@@ -129,6 +136,8 @@ class EqualizerView @JvmOverloads constructor(
     override fun onProgressChanged(seekbar: SeekBar?, progress: Int, fromUser: Boolean) {
         // Redraw band connector path
         bandConnectorLayout?.connect(bandList)
+        // Redraw band connector shadow
+        bandConnectorShadow?.draw(bandList)
     }
 
     override fun onStartTrackingTouch(seekbar: SeekBar?) {}
@@ -191,6 +200,59 @@ class EqualizerView @JvmOverloads constructor(
                     path.lineTo(y, (height.toFloat() - x) + offset)
                 }
             }
+            invalidate()
+        }
+
+        override fun onDraw(canvas: Canvas?) {
+            super.onDraw(canvas)
+            canvas?.drawPath(path, pathPaint)
+        }
+    }
+
+    inner class BandConnectorShadow @JvmOverloads constructor(
+            context: Context,
+            attrs: AttributeSet? = null,
+            defStyle: Int = 0,
+            defStyleRes: Int = 0
+    ): View(context, attrs, defStyle, defStyleRes) {
+
+        private var pathPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        private var path: Path = Path()
+
+        init {
+        }
+
+        fun draw(bandList: ArrayList<BandView>) {
+            // Redraw path
+            path.reset()
+
+            val startX = (width.toFloat() / bandList.size) / 2
+            val startY = height.toFloat()
+            path.moveTo(startX, startY)
+
+            for((index, band) in bandList.withIndex()) {
+                val bounds = band.thumb.bounds
+                val offset = bounds.width() / 2
+                var distW = width.toFloat() / bandList.size
+                val x = bounds.centerX().toFloat()
+                var y: Float
+                if(index == 0) {
+                    y = (distW / 2) * (index + 1)
+                    path.lineTo(y, (height.toFloat() - x) + offset)
+                } else {
+                    y = ((distW) * (index + 1)) - (distW / 2)
+                    path.lineTo(y, (height.toFloat() - x) + offset)
+                }
+            }
+
+            val endX = width.toFloat() - startX
+            val endY = startY
+            path.lineTo(endX, endY)
+
+            path.close()
+            // Note: Shader should be set AFTER paths are set
+            pathPaint.shader = LinearGradient(0f,0f,0f, height.toFloat(), Color.GREEN, Color.TRANSPARENT, Shader.TileMode.CLAMP)
+
             invalidate()
         }
 
