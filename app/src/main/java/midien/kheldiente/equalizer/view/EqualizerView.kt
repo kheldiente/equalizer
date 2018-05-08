@@ -241,10 +241,10 @@ class EqualizerView @JvmOverloads constructor(
             textPaint.alpha = 200
             textPaint.textSize = PixelUtil.dpToPx(context, 15f)
             textPaint.textAlign = Paint.Align.CENTER
-            drawBandNames()
+            draw()
         }
 
-        private fun drawBandNames() {
+        private fun draw() {
             invalidate()
         }
 
@@ -301,7 +301,7 @@ class EqualizerView @JvmOverloads constructor(
 
             path.close()
             // Note: Shader should be set AFTER paths are set
-            pathPaint.shader = LinearGradient(0f,0f,0f, height.toFloat(), Color.GREEN, Color.TRANSPARENT, Shader.TileMode.CLAMP)
+            pathPaint.shader = LinearGradient(0f,0f,0f, height.toFloat(), Color.GREEN, Color.TRANSPARENT, Shader.TileMode.MIRROR)
 
             invalidate()
         }
