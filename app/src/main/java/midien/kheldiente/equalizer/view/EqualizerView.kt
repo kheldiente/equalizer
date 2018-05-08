@@ -219,9 +219,6 @@ class EqualizerView @JvmOverloads constructor(
         private var pathPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
         private var path: Path = Path()
 
-        init {
-        }
-
         fun draw(bandList: ArrayList<BandView>) {
             // Redraw path
             path.reset()

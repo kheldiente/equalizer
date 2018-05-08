@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
     tools:context="midien.kheldiente.equalizer.MainActivity">
 
     <midien.kheldiente.equalizer.view.EqualizerView
@@ -11,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:background="@android:color/black"
-        app:bands="7"
+        app:bands="6"
         app:progressDrawable="@drawable/seekbar_style"
         app:thumb="@drawable/custom_thumb"
         app:layout_constraintLeft_toLeftOf="parent"
