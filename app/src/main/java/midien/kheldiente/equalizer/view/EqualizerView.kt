@@ -3,9 +3,12 @@ package midien.kheldiente.equalizer.view
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.SeekBar
+import android.widget.TextView
 import kotlin.collections.ArrayList
 import midien.kheldiente.equalizer.R
 import midien.kheldiente.equalizer.util.PixelUtil
@@ -19,13 +22,16 @@ class EqualizerView @JvmOverloads constructor(
 
     private val TAG = EqualizerView::class.java.simpleName
 
+    private val BAND_NAME_HEIGHT = 30f
+
     private var bandSize = 0
     private var progressDrawable = 0
     private var thumb = 0
 
     private val bandList: ArrayList<BandView> = ArrayList(bandSize)
+    private var bandNameLayout: BandNameLayout? = null
     private var bandConnectorLayout: BandConnectorLayout? = null
-    private var bandConnectorShadow: BandConnectorShadow? = null
+    private var bandConnectorShadowView: BandConnectorShadowView? = null
 
     init {
         attrs?.let {
@@ -63,8 +69,11 @@ class EqualizerView @JvmOverloads constructor(
         bandConnectorLayout = BandConnectorLayout(context)
         addView(bandConnectorLayout)
 
-        bandConnectorShadow = BandConnectorShadow(context)
-        addView(bandConnectorShadow)
+        bandConnectorShadowView = BandConnectorShadowView(context)
+        addView(bandConnectorShadowView)
+
+        bandNameLayout = BandNameLayout(context)
+        addView(bandNameLayout)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -72,26 +81,31 @@ class EqualizerView @JvmOverloads constructor(
         // the one to manipulate is not the height, but the WIDTH!
         // Because the band is ROTATED 270 degrees!
         setBandsVertically(w, h)
+
         bandConnectorLayout?.layout(0, 0, w, h)
         bandConnectorLayout?.connect(bandList)
 
         // Layout and draw band connector shadow
-        bandConnectorShadow?.layout(0, 0, w, h)
-        bandConnectorShadow?.draw(bandList)
+        bandConnectorShadowView?.layout(0, 0, w, h)
+        bandConnectorShadowView?.draw(bandList)
+
+        bandNameLayout?.layout(0,
+            (h - PixelUtil.dpToPx(context, BAND_NAME_HEIGHT * 2)).toInt(),
+            w,
+            h)
     }
 
     private fun setBandsVertically(width: Int, height: Int) {
-        // TODO This method only works on 3 bands! Make it flexible by using other numbers!
         val distW = width / bandSize
         val distH = height / bandSize
-        var left = (-height / 2 + (distW / 2))
-        var right = (height / 2 + (distW / 2))
+        var left = (-height / 2 + (distW / 2)) + PixelUtil.dpToPx(context, BAND_NAME_HEIGHT).toInt()
+        var right = (height / 2 + (distW / 2)) - PixelUtil.dpToPx(context, BAND_NAME_HEIGHT).toInt()
 
         for(band in bandList) {
             // Calculate height of band
             val forceBandHeight = PixelUtil.dpToPx(context, 20f)
-            val top = ((height / 2 - forceBandHeight)).toInt()
-            val bottom = ((height / 2 + forceBandHeight)).toInt()
+            val top = ((height / 2 - forceBandHeight)).toInt() - PixelUtil.dpToPx(context, BAND_NAME_HEIGHT).toInt()
+            val bottom = ((height / 2 + forceBandHeight)).toInt() - PixelUtil.dpToPx(context, BAND_NAME_HEIGHT).toInt()
             // Draw bandview ALWAYS IN FRONT!
             band.bringToFront()
             band.layout(left, top, right, bottom)
@@ -115,7 +129,7 @@ class EqualizerView @JvmOverloads constructor(
         var currentX = distW - (distW / 2)
         for (i in 1..bandSize) {
             val verticalGridPath = Path()
-            verticalGridPath.moveTo(currentX, height.toFloat())
+            verticalGridPath.moveTo(currentX, height.toFloat() - PixelUtil.dpToPx(context, BAND_NAME_HEIGHT))
             verticalGridPath.lineTo(currentX, 0f)
             canvas?.drawPath(verticalGridPath, gridLinePaint)
 
@@ -124,8 +138,8 @@ class EqualizerView @JvmOverloads constructor(
 
         // Set horizontal line
         val horizontalGridPath = Path()
-        horizontalGridPath.moveTo(0f, height.toFloat() / 2)
-        horizontalGridPath.lineTo(width.toFloat(), height.toFloat() / 2)
+        horizontalGridPath.moveTo(0f, (height.toFloat() / 2) - PixelUtil.dpToPx(context, BAND_NAME_HEIGHT))
+        horizontalGridPath.lineTo(width.toFloat(), (height.toFloat() / 2) - PixelUtil.dpToPx(context, BAND_NAME_HEIGHT))
         canvas?.drawPath(horizontalGridPath, gridLinePaint)
     }
 
@@ -138,7 +152,7 @@ class EqualizerView @JvmOverloads constructor(
         // Redraw band connector path
         bandConnectorLayout?.connect(bandList)
         // Redraw band connector shadow
-        bandConnectorShadow?.draw(bandList)
+        bandConnectorShadowView?.draw(bandList)
     }
 
     override fun onStartTrackingTouch(seekbar: SeekBar?) {}
@@ -189,7 +203,7 @@ class EqualizerView @JvmOverloads constructor(
             path.reset()
             for((index, band) in bandList.withIndex()) {
                 val bounds = band.thumb.bounds
-                val offset = bounds.width() / 2
+                val offset = (bounds.width() / 2) - PixelUtil.dpToPx(context, BAND_NAME_HEIGHT * 2).toInt()
                 var distW = width.toFloat() / bandList.size
                 val x = bounds.centerX().toFloat()
                 var y: Float
@@ -210,7 +224,44 @@ class EqualizerView @JvmOverloads constructor(
         }
     }
 
-    inner class BandConnectorShadow @JvmOverloads constructor(
+    inner class BandNameLayout @JvmOverloads constructor(
+            context: Context,
+            attrs: AttributeSet? = null,
+            defStyle: Int = 0,
+            defStyleRes: Int = 0
+    ): View(context, attrs, defStyle, defStyleRes) {
+
+        private val textPaint = Paint()
+
+        init {
+            setBackgroundColor(Color.BLACK)
+
+            // Init paint
+            textPaint.color = Color.WHITE
+            textPaint.alpha = 80
+            textPaint.textSize = PixelUtil.dpToPx(context, 15f)
+            drawBandNames()
+        }
+
+        private fun drawBandNames() {
+            invalidate()
+        }
+
+        override fun onDraw(canvas: Canvas?) {
+            super.onDraw(canvas)
+
+            val size = 5
+            val distW = width / size // 6 for now
+            var centerX = (distW / 2) / 2
+            for(i in 1..size) {
+                canvas?.drawText("450Hz", centerX.toFloat(), (height / 2).toFloat(), textPaint)
+                centerX += distW
+            }
+        }
+
+    }
+
+    inner class BandConnectorShadowView @JvmOverloads constructor(
             context: Context,
             attrs: AttributeSet? = null,
             defStyle: Int = 0,
@@ -230,7 +281,7 @@ class EqualizerView @JvmOverloads constructor(
 
             for((index, band) in bandList.withIndex()) {
                 val bounds = band.thumb.bounds
-                val offset = bounds.width() / 2
+                val offset = (bounds.width() / 2) - PixelUtil.dpToPx(context, BAND_NAME_HEIGHT * 2).toInt()
                 var distW = width.toFloat() / bandList.size
                 val x = bounds.centerX().toFloat()
                 var y: Float
