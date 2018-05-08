@@ -238,8 +238,9 @@ class EqualizerView @JvmOverloads constructor(
 
             // Init paint
             textPaint.color = Color.WHITE
-            textPaint.alpha = 80
+            textPaint.alpha = 200
             textPaint.textSize = PixelUtil.dpToPx(context, 15f)
+            textPaint.textAlign = Paint.Align.CENTER
             drawBandNames()
         }
 
@@ -252,7 +253,7 @@ class EqualizerView @JvmOverloads constructor(
 
             val size = 5
             val distW = width / size // 6 for now
-            var centerX = (distW / 2) / 2
+            var centerX = (distW / 2)
             for(i in 1..size) {
                 canvas?.drawText("450Hz", centerX.toFloat(), (height / 2).toFloat(), textPaint)
                 centerX += distW
