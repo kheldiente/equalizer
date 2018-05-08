@@ -58,6 +58,9 @@ class EqualizerView @JvmOverloads constructor(
 
         bandConnectorLayout = BandConnectorLayout(context)
         addView(bandConnectorLayout)
+
+        // To call onDraw()
+        setWillNotDraw(false)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -90,6 +93,38 @@ class EqualizerView @JvmOverloads constructor(
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {}
+
+    private fun setGridLines(canvas: Canvas?) {
+        // Init paint
+        val gridLinePaint = Paint()
+        gridLinePaint.color = Color.WHITE
+        gridLinePaint.alpha = 50
+        gridLinePaint.strokeWidth = PixelUtil.dpToPx(context, 1f)
+        gridLinePaint.style = Paint.Style.STROKE
+
+        // Set vertical grid lines
+        val distW = width.toFloat() / bandSize
+        var currentX = distW - (distW / 2)
+        for (i in 1..bandSize) {
+            val verticalGridPath = Path()
+            verticalGridPath.moveTo(currentX, height.toFloat())
+            verticalGridPath.lineTo(currentX, 0f)
+            canvas?.drawPath(verticalGridPath, gridLinePaint)
+
+            currentX += distW
+        }
+
+        // Set horizontal line
+        val horizontalGridPath = Path()
+        horizontalGridPath.moveTo(0f, height.toFloat() / 2)
+        horizontalGridPath.lineTo(width.toFloat(), height.toFloat() / 2)
+        canvas?.drawPath(horizontalGridPath, gridLinePaint)
+    }
+
+    override fun onDraw(canvas: Canvas?) {
+        super.onDraw(canvas)
+        setGridLines(canvas)
+    }
 
     override fun onProgressChanged(seekbar: SeekBar?, progress: Int, fromUser: Boolean) {
         // Redraw band connector path
@@ -127,16 +162,16 @@ class EqualizerView @JvmOverloads constructor(
             defStyleRes: Int = 0
     ): View(context, attrs, defStyle, defStyleRes) {
 
-        private val TAG = BandConnectorLayout::class.java.simpleName;
+        private val TAG = BandConnectorLayout::class.java.simpleName
 
-        private var paint: Paint = Paint()
+        private var pathPaint: Paint = Paint()
         private var path: Path = Path()
 
         init {
             // Init paint
-            paint.color = Color.GREEN
-            paint.strokeWidth = PixelUtil.dpToPx(context, 5f)
-            paint.style = Paint.Style.STROKE
+            pathPaint.color = Color.GREEN
+            pathPaint.strokeWidth = PixelUtil.dpToPx(context, 5f)
+            pathPaint.style = Paint.Style.STROKE
         }
 
         fun connect(bandList: ArrayList<BandView>) {
@@ -161,7 +196,7 @@ class EqualizerView @JvmOverloads constructor(
 
         override fun onDraw(canvas: Canvas?) {
             super.onDraw(canvas)
-            canvas?.drawPath(path, paint)
+            canvas?.drawPath(path, pathPaint)
         }
     }
 
