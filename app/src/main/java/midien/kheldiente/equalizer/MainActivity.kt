@@ -10,7 +10,6 @@ import android.os.Build
 import android.support.v4.app.ActivityCompat
 
 
-
 class MainActivity : AppCompatActivity() {
 
     private val PERMISSION_RECORD_AUDIO_REQUEST_CODE = 88
@@ -20,21 +19,24 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setup()
+        init()
         setupPermissions()
     }
 
-    private fun setup() {
-        mediaPlayer?.let {
-            mediaPlayer = MediaPlayer.create(this, R.raw.htmlthesong)
-            mediaPlayer?.isLooping = true
-        }
+    private fun init() {
+        mediaPlayer = MediaPlayer.create(this, R.raw.htmlthesong)
+        mediaPlayer?.isLooping = true
     }
 
     private fun startMediaPlayer() {
         mediaPlayer?.isPlaying?.let {
+            // Execute if not null
             if(!it!!)
                 mediaPlayer?.start()
+        } ?: run {
+            // Execute if null
+            init()
+            startMediaPlayer()
         }
     }
 
@@ -48,9 +50,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * App Permissions for Audio
-     */
     private fun setupPermissions() {
         // If we don't have the record audio permission...
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -67,12 +66,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        setup()
         startMediaPlayer()
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onPause() {
+        super.onPause()
         stopMediaPlayer()
     }
 
@@ -93,6 +91,5 @@ class MainActivity : AppCompatActivity() {
         }
         // Other permissions could go down here
     }
-
 
 }
