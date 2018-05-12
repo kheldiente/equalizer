@@ -32,6 +32,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
+
+        setSupportActionBar(tb_app)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
         mediaPlayer = MediaPlayer.create(this, R.raw.htmlthesong)
         mediaPlayer?.isLooping = true
 

@@ -1,16 +1,25 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
-    <style name="AppTextView">
+    <style name="AppToolbar.Theme" parent="Theme.AppCompat">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="fontFamily">@font/montserrat</item>
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+
+    <style name="AppTextView" parent="Theme.AppCompat">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:textColor">@android:color/white</item>
         <item name="android:fontFamily">@font/montserrat</item>
-        <item name="fontFamily">@font/montserrat</item>
     </style>
 
     <style name="AppCheckBoxCompat">

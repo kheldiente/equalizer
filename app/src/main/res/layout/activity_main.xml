@@ -9,6 +9,22 @@
     tools:context="midien.kheldiente.equalizer.MainActivity"
     >
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tb_app"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:theme="@style/AppToolbar.Theme">
+
+        <android.support.v7.widget.AppCompatTextView
+            style="@style/AppTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:layout_gravity="center"
+            />
+
+    </android.support.v7.widget.Toolbar>
+
     <midien.kheldiente.equalizer.view.EqualizerView
         android:id="@+id/equalizerView"
         android:layout_width="match_parent"

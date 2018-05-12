@@ -24,7 +24,6 @@
         android:id="@+id/cb_preset_selected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:checked="true"
         style="@style/AppCheckBoxCompat"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
