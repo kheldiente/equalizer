@@ -3,6 +3,8 @@
     <color name="colorPrimary">#212226</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="progress">@android:color/transparent</color>
-    <color name="thumb">@android:color/white</color>
+    <color name="seekbar_progress">@android:color/transparent</color>
+    <color name="seekbar_thumb">@android:color/white</color>
+    <color name="switch_progress">@android:color/holo_green_light</color>
+    <color name="switch_thumb">@android:color/white</color>
 </resources>

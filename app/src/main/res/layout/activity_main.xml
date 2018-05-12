@@ -16,7 +16,7 @@
         android:background="@android:color/black"
         app:bands="6"
         app:progressDrawable="@drawable/seekbar_style"
-        app:thumb="@drawable/custom_thumb"
+        app:thumb="@drawable/seekbar_thumb"
         />
 
     <android.support.v4.widget.NestedScrollView

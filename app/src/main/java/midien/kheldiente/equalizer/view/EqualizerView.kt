@@ -40,7 +40,7 @@ class EqualizerView @JvmOverloads constructor(
             // Get set attr value for bands
             bandSize = typedArray.getInteger(R.styleable.EqualizerView_bands, 3)
             progressDrawable = typedArray.getResourceId(R.styleable.EqualizerView_progressDrawable, R.drawable.seekbar_style)
-            thumb = typedArray.getResourceId(R.styleable.EqualizerView_thumb, R.drawable.custom_thumb)
+            thumb = typedArray.getResourceId(R.styleable.EqualizerView_thumb, R.drawable.seekbar_thumb)
             typedArray.recycle()
 
             initDefaults()

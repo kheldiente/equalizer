@@ -9,7 +9,7 @@
                 <size android:height="5dp"/>
                 <corners
                     android:radius="5dp" />
-                <solid android:color="@color/progress"/>
+                <solid android:color="@color/seekbar_progress"/>
             </shape>
         </clip>
     </item>

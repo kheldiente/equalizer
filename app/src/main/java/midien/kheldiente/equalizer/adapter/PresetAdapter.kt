@@ -28,7 +28,10 @@ class PresetAdapter(private val context: Context,
 
         fun bind(preset: Preset, listener: (Preset) -> Unit) = with(itemView) {
             txt_preset.text = preset.name
-            setOnClickListener { listener(preset) }
+            setOnClickListener {
+                cb_preset_selected.isChecked = !cb_preset_selected.isChecked
+                listener(preset)
+            }
         }
 
     }

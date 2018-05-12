@@ -9,21 +9,23 @@
     android:padding="15dp"
     >
 
-    <TextView
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/txt_preset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        style="@style/AppTextView"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:text="Preset"
         />
 
-    <CheckBox
+    <android.support.v7.widget.AppCompatCheckBox
+        android:id="@+id/cb_preset_selected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:checked="true"
+        style="@style/AppCheckBoxCompat"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
