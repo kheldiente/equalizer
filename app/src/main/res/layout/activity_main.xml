@@ -12,7 +12,7 @@
     <midien.kheldiente.equalizer.view.EqualizerView
         android:id="@+id/equalizerView"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
+        android:layout_height="300dp"
         android:background="@android:color/black"
         app:bands="6"
         app:progressDrawable="@drawable/seekbar_style"
