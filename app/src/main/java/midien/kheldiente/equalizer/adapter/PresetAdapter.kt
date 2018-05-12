@@ -15,7 +15,6 @@ class PresetAdapter(private val context: Context,
                     private val listener: (Preset) -> Unit)
     : RecyclerView.Adapter<PresetAdapter.PresetViewHolder>() {
 
-    val selected = -1
     val checkBoxList = ArrayList<CheckBox>(0)
 
     override fun onBindViewHolder(holder: PresetViewHolder, position: Int)
