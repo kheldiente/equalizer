@@ -19,16 +19,30 @@
         app:thumb="@drawable/custom_thumb"
         />
 
-    <include
-        layout="@layout/layout_switch"
-        />
-
-    <android.support.v7.widget.RecyclerView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:divider="@drawable/list_divider"
-        android:dividerHeight="1px"
-        tools:listitem="@layout/item_preset"
-        />
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include
+                layout="@layout/layout_switch"
+                />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/list_preset"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/list_divider"
+                android:dividerHeight="1px"
+                tools:listitem="@layout/item_preset"
+                />
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
 
 </LinearLayout>

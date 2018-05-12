@@ -5,27 +5,30 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.item_preset.view.*
 import midien.kheldiente.equalizer.R
+import midien.kheldiente.equalizer.data.Preset
 
-class PresetAdapter(private val context: Context) : RecyclerView.Adapter<PresetAdapter.PresetViewHolder>() {
+class PresetAdapter(private val context: Context,
+                    var presetList: ArrayList<Preset> = ArrayList(0),
+                    private val listener: (Preset) -> Unit)
+    : RecyclerView.Adapter<PresetAdapter.PresetViewHolder>() {
 
-    override fun onBindViewHolder(holder: PresetViewHolder, position: Int) {}
+    override fun onBindViewHolder(holder: PresetViewHolder, position: Int)
+            = holder.bind(preset = presetList[position], listener = listener)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PresetViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.item_preset, parent, false)
-        return PresetViewHolder(view)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)
+            = PresetViewHolder(LayoutInflater.from(context).inflate(R.layout.item_preset, parent, false))
 
-    override fun getItemCount(): Int {
-        return 0
-    }
+    override fun getItemCount() = presetList.size
 
     inner class PresetViewHolder @JvmOverloads constructor(
-            view: View
-    ): RecyclerView.ViewHolder(view) {
+            itemView: View
+    ): RecyclerView.ViewHolder(itemView) {
 
-        fun bindPreset() {
-
+        fun bind(preset: Preset, listener: (Preset) -> Unit) = with(itemView) {
+            txt_preset.text = preset.name
+            setOnClickListener { listener(preset) }
         }
 
     }

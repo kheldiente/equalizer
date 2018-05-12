@@ -9,9 +9,11 @@ import android.content.pm.PackageManager
 import android.media.audiofx.Equalizer
 import android.os.Build
 import android.support.v4.app.ActivityCompat
+import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import kotlinx.android.synthetic.main.activity_main.*
+import midien.kheldiente.equalizer.adapter.PresetAdapter
 import midien.kheldiente.equalizer.data.Preset
-
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +22,7 @@ class MainActivity : AppCompatActivity() {
 
     private var mediaPlayer: MediaPlayer? = null
     private var equalizer: Equalizer? = null
+    private var presetAdapter: PresetAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,31 +38,46 @@ class MainActivity : AppCompatActivity() {
         equalizer = Equalizer(0, mediaPlayer?.audioSessionId!!)
         equalizer?.enabled = true
 
-        val presets = equalizer?.numberOfPresets
-        val bands = equalizer?.numberOfBands
+        setupPresetList()
+    }
 
+    private fun setupEqualizerView() {
+        val bands = equalizer?.numberOfBands
         val lowestBandLevel = equalizer?.bandLevelRange?.get(0)?.div(100) // in decibels
         val highestBandLevel = equalizer?.bandLevelRange?.get(1)?.div(100) // in decibels
 
-        Log.d(TAG, String.format("Number of presets: %s", presets))
         Log.d(TAG, String.format("Number of bands: %s", bands))
         Log.d(TAG, String.format("Lowest band level: %s dB", lowestBandLevel))
         Log.d(TAG, String.format("Highest band level: %s dB", highestBandLevel))
-
-        // Get preset names
-        val presetList = ArrayList<Preset>(0)
-        (0 until presets!!)
-                .map { equalizer?.getPresetName(it.toShort()) }
-                .mapTo(presetList) { Preset(it) }
-                .forEach { Log.d(TAG, String.format("preset name: %s", it.name)) }
-
 
         // Get center frequency for each band
         (0 until bands!!)
                 .map { equalizer?.getCenterFreq(it.toShort()) }
                 .forEach { Log.d(TAG, String.format("Center frequency: %s Hz", it?.div(1000))) }
-
     }
+
+    private fun setupPresetList() {
+        presetAdapter = PresetAdapter(this) {
+            Toast.makeText(this, "${it.name} Clicked", Toast.LENGTH_SHORT).show()
+        }
+
+        list_preset.layoutManager = LinearLayoutManager(this)
+        list_preset.isNestedScrollingEnabled = true
+        list_preset.adapter = presetAdapter
+
+        val presets = equalizer?.numberOfPresets
+        // Get preset names
+        val presetList = ArrayList<Preset>(0)
+        (0 until presets!!)
+                .map { equalizer?.getPresetName(it.toShort()) }
+                .mapTo(presetList) { Preset(it) }
+                .run {
+                    presetAdapter?.presetList = presetList
+                    presetAdapter?.notifyDataSetChanged()
+                }
+    }
+
+
 
     private fun startMediaPlayer() {
         mediaPlayer?.isPlaying?.let {
