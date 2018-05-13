@@ -104,8 +104,6 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
                 }
     }
 
-
-
     private fun startMediaPlayer() {
         mediaPlayer?.isPlaying?.let {
             // Execute if not null
@@ -168,7 +166,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
                     // The permission was granted! Start up the visualizer!
                     startMediaPlayer()
                 } else {
-                    Toast.makeText(this, "Permission for audio not granted. Visualizer can't run.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Permission for audio not granted. Equalizer can't run.", Toast.LENGTH_LONG).show()
                     finish()
                     // The permission was denied, so we can show a message why we can't run the app
                     // and then close the app.
