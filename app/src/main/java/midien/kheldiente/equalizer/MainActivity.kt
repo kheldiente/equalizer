@@ -139,7 +139,11 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
     }
 
     override fun onBandLevelChanged(bandId: Int, level: Int, fromUser: Boolean) {
-        Log.d(TAG, "bandId: $bandId, level: $level, fromUser: $fromUser")
+        val lowestBandLevel = equalizer?.bandLevelRange?.get(0)
+        val bandLevel = (level.plus(lowestBandLevel!!)).toShort()
+
+        Log.d(TAG, "bandId: $bandId, bandLevel: $bandLevel, fromUser: $fromUser ")
+        equalizer?.setBandLevel(bandId.toShort(), bandLevel)
     }
 
     private fun setupPermissions() {

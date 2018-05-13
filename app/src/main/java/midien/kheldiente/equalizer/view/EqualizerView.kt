@@ -87,7 +87,7 @@ class EqualizerView @JvmOverloads constructor(
 
         bandList.clear()
         // Add default (3) band views
-        for(index in 1..bandSize) {
+        for(index in 0 until bandSize) {
             val bv = BandView(context)
             bv.progressDrawable = resources.getDrawable(progressDrawable, null)
             bv.thumb = resources.getDrawable(thumb, null)
@@ -171,7 +171,7 @@ class EqualizerView @JvmOverloads constructor(
         // Set vertical grid lines
         val distW = width.toFloat() / bandSize
         var currentX = distW - (distW / 2)
-        for (i in 1..bandSize) {
+        for (i in 0 until bandSize) {
             val verticalGridPath = Path()
             verticalGridPath.moveTo(currentX, height.toFloat() - PixelUtil.dpToPx(context, BAND_NAME_HEIGHT))
             verticalGridPath.lineTo(currentX, 0f)
