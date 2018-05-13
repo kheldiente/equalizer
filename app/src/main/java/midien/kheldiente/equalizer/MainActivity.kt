@@ -12,7 +12,6 @@ import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.widget.CompoundButton
-import android.widget.Switch
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_switch.*
 import midien.kheldiente.equalizer.adapter.PresetAdapter
@@ -73,11 +72,18 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
     }
 
     private fun setupPresetList() {
+        val eqEnabled = AppSettings.getSettingAsBoolean(this, AppSettings.EQUALIZER_ENABLED)
+        val eqPreset = AppSettings.getSettingAsString(this, AppSettings.EQUALIZER_PRESET)
+
         switch_equalizer.setOnCheckedChangeListener(this)
+        switch_equalizer.isChecked = eqEnabled
 
         presetAdapter = PresetAdapter(this) {
             // Toast.makeText(this, "${it.name} Clicked", Toast.LENGTH_SHORT).show()
+            AppSettings.setSetting(this, AppSettings.EQUALIZER_PRESET, it.name!!)
         }
+        presetAdapter?.enabled = eqEnabled
+        presetAdapter?.currentPreset = eqPreset
 
         list_preset.layoutManager = LinearLayoutManager(this)
         list_preset.isNestedScrollingEnabled = true
@@ -137,6 +143,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
     }
 
     override fun onCheckedChanged(compoundButton: CompoundButton?, checked: Boolean) {
+        AppSettings.setSetting(this, AppSettings.EQUALIZER_ENABLED, checked)
         presetAdapter?.enableAll(checked)
     }
 

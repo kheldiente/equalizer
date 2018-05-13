@@ -13,6 +13,8 @@ import midien.kheldiente.equalizer.data.Preset
 
 class PresetAdapter(private val context: Context,
                     var presetList: ArrayList<Preset> = ArrayList(0),
+                    var enabled: Boolean = false,
+                    var currentPreset: String = "Normal",
                     private val listener: (Preset) -> Unit)
     : RecyclerView.Adapter<PresetAdapter.PresetViewHolder>() {
 
@@ -50,6 +52,12 @@ class PresetAdapter(private val context: Context,
             // Save instance for reference
             itemViewList.add(itemView)
             txt_preset.text = preset.name
+            txt_preset.isEnabled = enabled
+            cb_preset_selected.isEnabled = enabled
+
+            if(preset.name.equals(currentPreset))
+                cb_preset_selected.isChecked = true
+
             setOnClickListener {
                 cb_preset_selected.isChecked = !cb_preset_selected.isChecked
                 listener(preset)
