@@ -26,6 +26,7 @@ class EqualizerView @JvmOverloads constructor(
     private var bandSize = 0
     private var progressDrawable = 0
     private var thumb = 0
+    private var maxBand = 50
     private var bandNames: ArrayList<Integer>? = null
 
     private val bandList: ArrayList<BandView> = ArrayList(0)
@@ -58,6 +59,10 @@ class EqualizerView @JvmOverloads constructor(
         setup()
     }
 
+    fun setMax(max: Int) {
+        maxBand = max
+    }
+
 
     private fun setup() {
         // call onDraw() to setup grid lines
@@ -69,6 +74,7 @@ class EqualizerView @JvmOverloads constructor(
             val bv = BandView(context)
             bv.progressDrawable = resources.getDrawable(progressDrawable, null)
             bv.thumb = resources.getDrawable(thumb, null)
+            bv.max = maxBand
             bv.tag = index
             bv.setPadding(PixelUtil.dpToPx(context, BAND_PADDING).toInt(),
                     0,
@@ -184,14 +190,11 @@ class EqualizerView @JvmOverloads constructor(
     ): SeekBar(context, attrs, defStyle, defStyleRes) {
 
         private val VERTICAL = 270f // default: 270f
-        private val MAX = 50
-        private val PROGRESS = 25
 
         init {
             rotation = VERTICAL
-            max = MAX
             // Init progress
-            progress = PROGRESS
+            progress = 0
          }
 
     }

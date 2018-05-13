@@ -4,7 +4,7 @@
         android:drawable="@drawable/ic_check_dark_24dp" />
     <item android:state_checked="true"
         android:state_enabled="true"
-        android:drawable="@drawable/ic_check_white_24dp" />
+        android:drawable="@drawable/ic_check_green_24dp" />
     <item android:state_checked="true"
         android:state_enabled="false"
         android:drawable="@drawable/ic_check_gray_24dp" />

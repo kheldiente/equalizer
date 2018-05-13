@@ -34,29 +34,32 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         setupPermissions()
     }
 
-    private fun init() {
-
-        setSupportActionBar(tb_app)
-        supportActionBar?.setDisplayShowTitleEnabled(false)
-
+    private fun setupMedia() {
         mediaPlayer = MediaPlayer.create(this, R.raw.htmlthesong)
         mediaPlayer?.isLooping = true
 
         equalizer = Equalizer(0, mediaPlayer?.audioSessionId!!)
         equalizer?.enabled = true
+    }
 
+    private fun init() {
+        setSupportActionBar(tb_app)
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        setupMedia()
         setupEqualizerView()
         setupPresetList()
     }
 
     private fun setupEqualizerView() {
         val numberOfBands = equalizer?.numberOfBands
-        val lowestBandLevel = equalizer?.bandLevelRange?.get(0)?.div(100) // in decibels
-        val highestBandLevel = equalizer?.bandLevelRange?.get(1)?.div(100) // in decibels
-
+        val lowestBandLevel = equalizer?.bandLevelRange?.get(0)
+        val highestBandLevel = equalizer?.bandLevelRange?.get(1)
+        val max = highestBandLevel?.minus(lowestBandLevel!!)!!
         Log.d(TAG, String.format("Number of bands: %s", numberOfBands))
-        Log.d(TAG, String.format("Lowest band level: %s dB", lowestBandLevel))
-        Log.d(TAG, String.format("Highest band level: %s dB", highestBandLevel))
+        Log.d(TAG, String.format("Lowest band level: %s dB", lowestBandLevel?.div(100)))
+        Log.d(TAG, String.format("Highest band level: %s dB", highestBandLevel?.div(100)))
+        Log.d(TAG, String.format("Max level: %sdB", max))
 
         var bands = ArrayList<Integer>(0)
         // Get center frequency for each band
@@ -66,6 +69,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
                 .forEach { Log.d(TAG, String.format("Center frequency: %sHz", it)) }
 
         view_eq.setBands(bands)
+        view_eq.setMax(max)
     }
 
     private fun setupPresetList() {
