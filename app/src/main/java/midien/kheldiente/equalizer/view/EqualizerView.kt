@@ -19,14 +19,16 @@ class EqualizerView @JvmOverloads constructor(
 
     private val TAG = EqualizerView::class.java.simpleName
 
+    private val DEFAULT_BAND_SIZE = 3
     private val BAND_NAME_HEIGHT = 30f
     private val BAND_PADDING = 20
 
     private var bandSize = 0
     private var progressDrawable = 0
     private var thumb = 0
+    private var bandNames: ArrayList<Integer>? = null
 
-    private val bandList: ArrayList<BandView> = ArrayList(bandSize)
+    private val bandList: ArrayList<BandView> = ArrayList(0)
     private var bandNameLayout: BandNameLayout? = null
     private var bandConnectorLayout: BandConnectorLayout? = null
     private var bandConnectorShadowView: BandConnectorShadowView? = null
@@ -38,19 +40,30 @@ class EqualizerView @JvmOverloads constructor(
                     0,
                     0)
             // Get set attr value for bands
-            bandSize = typedArray.getInteger(R.styleable.EqualizerView_bands, 3)
+            bandSize = typedArray.getInteger(R.styleable.EqualizerView_bands, DEFAULT_BAND_SIZE)
             progressDrawable = typedArray.getResourceId(R.styleable.EqualizerView_progressDrawable, R.drawable.seekbar_style)
             thumb = typedArray.getResourceId(R.styleable.EqualizerView_thumb, R.drawable.seekbar_thumb)
             typedArray.recycle()
 
-            initDefaults()
+            setup()
         }
     }
 
-    private fun initDefaults() {
+    fun setBands(bands: ArrayList<Integer>?) {
+        if(bands?.size!! > DEFAULT_BAND_SIZE) {
+            bandSize = bands?.size!!
+            bandNames = bands
+        }
+
+        setup()
+    }
+
+
+    private fun setup() {
         // call onDraw() to setup grid lines
         setWillNotDraw(false)
 
+        bandList.clear()
         // Add default (3) band views
         for(index in 1..bandSize) {
             val bv = BandView(context)
@@ -75,6 +88,8 @@ class EqualizerView @JvmOverloads constructor(
         addView(bandConnectorShadowView)
 
         bandNameLayout = BandNameLayout(context)
+        bandNameLayout?.hertz = bandNames
+
         addView(bandNameLayout)
     }
 
@@ -234,6 +249,7 @@ class EqualizerView @JvmOverloads constructor(
             defStyleRes: Int = 0
     ): View(context, attrs, defStyle, defStyleRes) {
 
+        var hertz: ArrayList<Integer>? = null
         private val textPaint = Paint()
 
         init {
@@ -253,15 +269,16 @@ class EqualizerView @JvmOverloads constructor(
 
         override fun onDraw(canvas: Canvas?) {
             super.onDraw(canvas)
-
-            val hertz = arrayListOf("60Hz", "150Hz", "400Hz", "1KHz", "2.4KHz", "15KHz")
-
-            val distW = width / hertz.size // 6 for now
-            var centerX = (distW / 2)
-            for(hert in hertz) {
-                canvas?.drawText(hert, centerX.toFloat(), (height / 2).toFloat(), textPaint)
-                centerX += distW
+            hertz?.let {
+                val distW = width / (hertz?.size ?: 1)
+                var centerX = (distW / 2)
+                for(hert in hertz!!) {
+                    val name = String.format("%sHz", hert)
+                    canvas?.drawText(name, centerX.toFloat(), (height / 2).toFloat(), textPaint)
+                    centerX += distW
+                }
             }
+
         }
 
     }

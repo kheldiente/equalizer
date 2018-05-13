@@ -26,7 +26,7 @@
     </android.support.v7.widget.Toolbar>
 
     <midien.kheldiente.equalizer.view.EqualizerView
-        android:id="@+id/equalizerView"
+        android:id="@+id/view_eq"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:background="@android:color/black"

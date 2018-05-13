@@ -45,22 +45,27 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         equalizer = Equalizer(0, mediaPlayer?.audioSessionId!!)
         equalizer?.enabled = true
 
+        setupEqualizerView()
         setupPresetList()
     }
 
     private fun setupEqualizerView() {
-        val bands = equalizer?.numberOfBands
+        val numberOfBands = equalizer?.numberOfBands
         val lowestBandLevel = equalizer?.bandLevelRange?.get(0)?.div(100) // in decibels
         val highestBandLevel = equalizer?.bandLevelRange?.get(1)?.div(100) // in decibels
 
-        Log.d(TAG, String.format("Number of bands: %s", bands))
+        Log.d(TAG, String.format("Number of bands: %s", numberOfBands))
         Log.d(TAG, String.format("Lowest band level: %s dB", lowestBandLevel))
         Log.d(TAG, String.format("Highest band level: %s dB", highestBandLevel))
 
+        var bands = ArrayList<Integer>(0)
         // Get center frequency for each band
-        (0 until bands!!)
+        (0 until numberOfBands!!)
                 .map { equalizer?.getCenterFreq(it.toShort()) }
-                .forEach { Log.d(TAG, String.format("Center frequency: %s Hz", it?.div(1000))) }
+                .mapTo(bands) { Integer(it?.div(1000)!!) }
+                .forEach { Log.d(TAG, String.format("Center frequency: %sHz", it)) }
+
+        view_eq.setBands(bands)
     }
 
     private fun setupPresetList() {
