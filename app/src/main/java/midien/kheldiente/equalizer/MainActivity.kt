@@ -69,6 +69,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
 
         view_eq.setBands(bands)
         view_eq.setMax(max)
+        view_eq.redraw()
     }
 
     private fun setupPresetList() {
@@ -81,7 +82,6 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         switch_equalizer.isChecked = eqEnabled
 
         presetAdapter = PresetAdapter(this) {
-            // Toast.makeText(this, "${it.name} Clicked", Toast.LENGTH_SHORT).show()
             AppSettings.setSetting(this, AppSettings.EQUALIZER_PRESET, it.name!!)
         }
         presetAdapter?.enabled = eqEnabled
@@ -99,6 +99,8 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
                 .map { equalizer?.getPresetName(it.toShort()) }
                 .mapTo(presetList) { Preset(it) }
                 .run {
+                    // Add "User" preset
+                    presetList.add(Preset("User"))
                     presetAdapter?.presetList = presetList
                     presetAdapter?.notifyDataSetChanged()
                 }
@@ -107,7 +109,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
     private fun startMediaPlayer() {
         mediaPlayer?.isPlaying?.let {
             // Execute if not null
-            if(!it!!)
+            if(!it)
                 mediaPlayer?.start()
         } ?: run {
             // Execute if null
@@ -118,7 +120,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
 
     private fun stopMediaPlayer() {
         mediaPlayer?.isPlaying?.let {
-            if(it!!)
+            if(it)
                 mediaPlayer?.stop()
 
             mediaPlayer?.release()

@@ -41,7 +41,7 @@ class EqualizerView @JvmOverloads constructor(
                     0,
                     0)
             // Get set attr value for bands
-            bandSize = typedArray.getInteger(R.styleable.EqualizerView_bands, DEFAULT_BAND_SIZE)
+            bandSize = typedArray.getInteger(R.styleable.EqualizerView_bands, 0)
             progressDrawable = typedArray.getResourceId(R.styleable.EqualizerView_progressDrawable, R.drawable.seekbar_style)
             thumb = typedArray.getResourceId(R.styleable.EqualizerView_thumb, R.drawable.seekbar_thumb)
             typedArray.recycle()
@@ -52,19 +52,23 @@ class EqualizerView @JvmOverloads constructor(
 
     fun setBands(bands: ArrayList<Integer>?) {
         if(bands?.size!! > DEFAULT_BAND_SIZE) {
-            bandSize = bands?.size!!
+            bandSize = bands?.size
             bandNames = bands
         }
-
-        setup()
     }
 
     fun setMax(max: Int) {
         maxBand = max
     }
 
+    fun redraw() {
+        setup()
+    }
 
     private fun setup() {
+        if(bandSize == 0)
+            return
+
         // call onDraw() to setup grid lines
         setWillNotDraw(false)
 
@@ -75,6 +79,7 @@ class EqualizerView @JvmOverloads constructor(
             bv.progressDrawable = resources.getDrawable(progressDrawable, null)
             bv.thumb = resources.getDrawable(thumb, null)
             bv.max = maxBand
+            bv.progress = maxBand / 2
             bv.tag = index
             bv.setPadding(PixelUtil.dpToPx(context, BAND_PADDING).toInt(),
                     0,
@@ -100,6 +105,9 @@ class EqualizerView @JvmOverloads constructor(
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        if(bandSize == 0)
+            return
+
         // Warning! In order to set bands vertically,
         // the one to manipulate is not the height, but the WIDTH!
         // Because the band is ROTATED 270 degrees!
@@ -168,6 +176,9 @@ class EqualizerView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+        if(bandSize == 0)
+            return
+
         setGridLines(canvas)
     }
 
@@ -193,8 +204,6 @@ class EqualizerView @JvmOverloads constructor(
 
         init {
             rotation = VERTICAL
-            // Init progress
-            progress = 0
          }
 
     }
