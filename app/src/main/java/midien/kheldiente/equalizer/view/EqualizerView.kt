@@ -19,6 +19,13 @@ class EqualizerView @JvmOverloads constructor(
 
     private val TAG = EqualizerView::class.java.simpleName
 
+
+    interface EventListener {
+
+        fun onBandLevelChanged(bandId: Int, level: Int, fromUser: Boolean) = Unit
+
+    }
+
     private val DEFAULT_BAND_SIZE = 3
     private val BAND_NAME_HEIGHT = 30f
     private val BAND_PADDING = 20
@@ -28,6 +35,8 @@ class EqualizerView @JvmOverloads constructor(
     private var thumb = 0
     private var maxBand = 50
     private var bandNames: ArrayList<Integer>? = null
+
+    var listener: EventListener? = null
 
     private val bandList: ArrayList<BandView> = ArrayList(0)
     private var bandNameLayout: BandNameLayout? = null
@@ -57,11 +66,15 @@ class EqualizerView @JvmOverloads constructor(
         }
     }
 
+    fun setBandListener(bandListener: EventListener) {
+        listener = bandListener
+    }
+
     fun setMax(max: Int) {
         maxBand = max
     }
 
-    fun redraw() {
+    fun draw() {
         setup()
     }
 
@@ -80,7 +93,7 @@ class EqualizerView @JvmOverloads constructor(
             bv.thumb = resources.getDrawable(thumb, null)
             bv.max = maxBand
             bv.progress = maxBand / 2
-            bv.tag = index
+            bv.id = index
             bv.setPadding(PixelUtil.dpToPx(context, BAND_PADDING).toInt(),
                     0,
                     PixelUtil.dpToPx(context, BAND_PADDING).toInt(),
@@ -187,6 +200,8 @@ class EqualizerView @JvmOverloads constructor(
         bandConnectorLayout?.connect(bandList)
         // Redraw band connector shadow
         bandConnectorShadowView?.draw(bandList)
+        // Inform binded listener
+        listener?.onBandLevelChanged(seekbar?.id!!, progress, fromUser)
     }
 
     override fun onStartTrackingTouch(seekbar: SeekBar?) {}

@@ -16,8 +16,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_switch.*
 import midien.kheldiente.equalizer.adapter.PresetAdapter
 import midien.kheldiente.equalizer.data.Preset
+import midien.kheldiente.equalizer.view.EqualizerView
 
-class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener {
+class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener, EqualizerView.EventListener {
 
     private val TAG = MainActivity::class.java.simpleName
     private val PERMISSION_RECORD_AUDIO_REQUEST_CODE = 88
@@ -65,11 +66,12 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         (0 until numberOfBands!!)
                 .map { equalizer?.getCenterFreq(it.toShort()) }
                 .mapTo(bands) { Integer(it?.div(1000)!!) }
-                .forEach { Log.d(TAG, "Center frequency: {$it}Hz") }
+                .forEach { Log.d(TAG, "Center frequency: $it Hz") }
 
         view_eq.setBands(bands)
         view_eq.setMax(max)
-        view_eq.redraw()
+        view_eq.setBandListener(this)
+        view_eq.draw() // Force draw with new equalizer settings
     }
 
     private fun setupPresetList() {
@@ -131,6 +133,15 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         equalizer = null
     }
 
+    override fun onCheckedChanged(compoundButton: CompoundButton?, checked: Boolean) {
+        AppSettings.setSetting(this, AppSettings.EQUALIZER_ENABLED, checked)
+        presetAdapter?.enableAll(checked)
+    }
+
+    override fun onBandLevelChanged(bandId: Int, level: Int, fromUser: Boolean) {
+        Log.d(TAG, "bandId: $bandId, level: $level, fromUser: $fromUser")
+    }
+
     private fun setupPermissions() {
         // If we don't have the record audio permission...
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -143,11 +154,6 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         } else {
             startMediaPlayer()
         }
-    }
-
-    override fun onCheckedChanged(compoundButton: CompoundButton?, checked: Boolean) {
-        AppSettings.setSetting(this, AppSettings.EQUALIZER_ENABLED, checked)
-        presetAdapter?.enableAll(checked)
     }
 
     override fun onResume() {
