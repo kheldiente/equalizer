@@ -273,7 +273,7 @@ class EqualizerView @JvmOverloads constructor(
         override fun onDraw(canvas: Canvas?) {
             super.onDraw(canvas)
             hertz?.let {
-                val distW = width / (hertz?.size ?: 1)
+                val distW = width / (hertz?.size ?: 3)
                 var centerX = (distW / 2)
                 for(hert in hertz!!) {
                     val name = String.format("%sHz", hert)

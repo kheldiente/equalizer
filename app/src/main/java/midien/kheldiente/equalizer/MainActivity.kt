@@ -55,17 +55,17 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         val lowestBandLevel = equalizer?.bandLevelRange?.get(0)
         val highestBandLevel = equalizer?.bandLevelRange?.get(1)
         val max = highestBandLevel?.minus(lowestBandLevel!!)!!
-        Log.d(TAG, String.format("Number of bands: %s", numberOfBands))
-        Log.d(TAG, String.format("Lowest band level: %s dB", lowestBandLevel?.div(100)))
-        Log.d(TAG, String.format("Highest band level: %s dB", highestBandLevel?.div(100)))
-        Log.d(TAG, String.format("Max level: %sdB", max))
+        Log.d(TAG, "Number of bands: $numberOfBands")
+        Log.d(TAG, "Lowest band level: ${lowestBandLevel?.div(100)}dB")
+        Log.d(TAG, "Highest band level: ${highestBandLevel?.div(100)}dB")
+        Log.d(TAG, "Max level: ${max}dB")
 
         var bands = ArrayList<Integer>(0)
         // Get center frequency for each band
         (0 until numberOfBands!!)
                 .map { equalizer?.getCenterFreq(it.toShort()) }
                 .mapTo(bands) { Integer(it?.div(1000)!!) }
-                .forEach { Log.d(TAG, String.format("Center frequency: %sHz", it)) }
+                .forEach { Log.d(TAG, "Center frequency: {$it}Hz") }
 
         view_eq.setBands(bands)
         view_eq.setMax(max)
@@ -73,7 +73,9 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
 
     private fun setupPresetList() {
         val eqEnabled = AppSettings.getSettingAsBoolean(this, AppSettings.EQUALIZER_ENABLED)
-        val eqPreset = AppSettings.getSettingAsString(this, AppSettings.EQUALIZER_PRESET)
+        var eqPreset = AppSettings.getSettingAsString(this, AppSettings.EQUALIZER_PRESET)
+        if(eqPreset.isEmpty())
+            eqPreset = "Normal" // Override preset
 
         switch_equalizer.setOnCheckedChangeListener(this)
         switch_equalizer.isChecked = eqEnabled
@@ -83,6 +85,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
             AppSettings.setSetting(this, AppSettings.EQUALIZER_PRESET, it.name!!)
         }
         presetAdapter?.enabled = eqEnabled
+
         presetAdapter?.currentPreset = eqPreset
 
         list_preset.layoutManager = LinearLayoutManager(this)
