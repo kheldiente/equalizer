@@ -18,7 +18,7 @@
 
     <style name="AppTextView" parent="Theme.AppCompat">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColor">@color/textview_color</item>
         <item name="android:fontFamily">@font/montserrat</item>
     </style>
 

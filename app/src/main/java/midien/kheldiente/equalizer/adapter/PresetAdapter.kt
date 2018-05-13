@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.TextView
 import kotlinx.android.synthetic.main.item_preset.view.*
 import midien.kheldiente.equalizer.R
 import midien.kheldiente.equalizer.data.Preset
@@ -15,7 +16,7 @@ class PresetAdapter(private val context: Context,
                     private val listener: (Preset) -> Unit)
     : RecyclerView.Adapter<PresetAdapter.PresetViewHolder>() {
 
-    val checkBoxList = ArrayList<CheckBox>(0)
+    val itemViewList = ArrayList<View>(0)
 
     override fun onBindViewHolder(holder: PresetViewHolder, position: Int)
             = holder.bind(position = position, preset = presetList[position], listener = listener)
@@ -25,13 +26,29 @@ class PresetAdapter(private val context: Context,
 
     override fun getItemCount() = presetList.size
 
-    inner class PresetViewHolder @JvmOverloads constructor(
-            itemView: View
-    ): RecyclerView.ViewHolder(itemView) {
+    fun checkAll(check: Boolean) {
+        itemViewList.forEach {
+            val checkBox = it.findViewById<CheckBox>(R.id.cb_preset_selected)
+            checkBox.isChecked = check
+        }
+    }
+
+    fun enableAll(enable: Boolean) {
+        itemViewList.forEach {
+            val txtName = it.findViewById<TextView>(R.id.txt_preset)
+            val checkBox = it.findViewById<CheckBox>(R.id.cb_preset_selected)
+
+            txtName.isEnabled = enable
+            checkBox.isEnabled = enable
+            it.isEnabled = enable
+        }
+    }
+
+    inner class PresetViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
         fun bind(position: Int, preset: Preset, listener: (Preset) -> Unit) = with(itemView) {
             // Save instance for reference
-            checkBoxList.add(cb_preset_selected)
+            itemViewList.add(itemView)
             txt_preset.text = preset.name
             setOnClickListener {
                 cb_preset_selected.isChecked = !cb_preset_selected.isChecked
@@ -41,9 +58,12 @@ class PresetAdapter(private val context: Context,
         }
 
         fun forceUncheck(selected: Int) {
-            checkBoxList
-                    .filterIndexed { index, cb -> index != selected }
-                    .forEach { it.isChecked = false }
+            itemViewList
+                    .filterIndexed { index, view -> index != selected }
+                    .forEach {
+                        val checkBox = it.findViewById<CheckBox>(R.id.cb_preset_selected)
+                        checkBox.isChecked = false
+                    }
         }
 
     }

@@ -11,11 +11,14 @@ import android.os.Build
 import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.widget.CompoundButton
+import android.widget.Switch
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.layout_switch.*
 import midien.kheldiente.equalizer.adapter.PresetAdapter
 import midien.kheldiente.equalizer.data.Preset
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener {
 
     private val TAG = MainActivity::class.java.simpleName
     private val PERMISSION_RECORD_AUDIO_REQUEST_CODE = 88
@@ -61,8 +64,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupPresetList() {
+        switch_equalizer.setOnCheckedChangeListener(this)
+
         presetAdapter = PresetAdapter(this) {
-            Toast.makeText(this, "${it.name} Clicked", Toast.LENGTH_SHORT).show()
+            // Toast.makeText(this, "${it.name} Clicked", Toast.LENGTH_SHORT).show()
         }
 
         list_preset.layoutManager = LinearLayoutManager(this)
@@ -120,6 +125,10 @@ class MainActivity : AppCompatActivity() {
         } else {
             startMediaPlayer()
         }
+    }
+
+    override fun onCheckedChanged(compoundButton: CompoundButton?, checked: Boolean) {
+        presetAdapter?.enableAll(checked)
     }
 
     override fun onResume() {
