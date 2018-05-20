@@ -3,6 +3,7 @@ package midien.kheldiente.equalizer.view
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
@@ -85,6 +86,7 @@ class EqualizerView @JvmOverloads constructor(
         // call onDraw() to setup grid lines
         setWillNotDraw(false)
 
+        removeAllViews()
         bandList.clear()
         // Add default (3) band views
         for(index in 0 until bandSize) {
@@ -117,28 +119,6 @@ class EqualizerView @JvmOverloads constructor(
         addView(bandNameLayout)
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        if(bandSize == 0)
-            return
-
-        // Warning! In order to set bands vertically,
-        // the one to manipulate is not the height, but the WIDTH!
-        // Because the band is ROTATED 270 degrees!
-        setBandsVertically(w, h)
-
-        bandConnectorLayout?.layout(0, 0, w, h)
-        bandConnectorLayout?.connect(bandList)
-
-        // Layout and draw band connector shadow
-        bandConnectorShadowView?.layout(0, 0, w, h)
-        bandConnectorShadowView?.draw(bandList)
-
-        bandNameLayout?.layout(0,
-            (h - PixelUtil.dpToPx(context, BAND_NAME_HEIGHT * 2)).toInt(),
-            w,
-            h)
-    }
-
     private fun setBandsVertically(width: Int, height: Int) {
         val distW = width / bandSize
         val distH = height / bandSize
@@ -158,7 +138,28 @@ class EqualizerView @JvmOverloads constructor(
         }
     }
 
-    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {}
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        if(bandSize == 0)
+            return
+
+        // Warning! In order to set bands vertically,
+        // the one to manipulate is not the height, but the WIDTH!
+        // Because the band is ROTATED 270 degrees!
+        setBandsVertically(width, height)
+
+        bandConnectorLayout?.layout(0, 0, width, height)
+        bandConnectorLayout?.connect(bandList)
+
+        // Layout and draw band connector shadow
+        bandConnectorShadowView?.layout(0, 0, width, height)
+        bandConnectorShadowView?.draw(bandList)
+
+        bandNameLayout?.layout(0,
+                (height - PixelUtil.dpToPx(context, BAND_NAME_HEIGHT * 2)).toInt(),
+                width,
+                height)
+
+    }
 
     private fun setGridLines(canvas: Canvas?) {
         // Init paint
