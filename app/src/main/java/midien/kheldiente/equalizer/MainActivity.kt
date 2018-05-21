@@ -52,14 +52,21 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
     }
 
     private fun setupEqualizerView() {
+        val cachedBandSettings = AppSettings.getSettingList(this, AppSettings.EQUALIZER_BAND_SETTINGS)
         val numberOfBands = equalizer?.numberOfBands
         val lowestBandLevel = equalizer?.bandLevelRange?.get(0)
         val highestBandLevel = equalizer?.bandLevelRange?.get(1)
         val max = highestBandLevel?.minus(lowestBandLevel!!)!!
+        Log.d(TAG, "Cached band settings: $cachedBandSettings")
         Log.d(TAG, "Number of bands: $numberOfBands")
         Log.d(TAG, "Lowest band level: ${lowestBandLevel?.div(100)}dB")
         Log.d(TAG, "Highest band level: ${highestBandLevel?.div(100)}dB")
         Log.d(TAG, "Max level: ${max}dB")
+
+        for(i in 0 until numberOfBands!!) {
+            val level = cachedBandSettings.getString(i.toString())
+            Log.d(TAG, "Cached value => band: $i, level: $level")
+        }
 
         var bands = ArrayList<Integer>(0)
         // Get center frequency for each band
@@ -143,6 +150,9 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         val bandLevel = (level.plus(lowestBandLevel!!)).toShort()
 
         Log.d(TAG, "bandId: $bandId, bandLevel: $bandLevel, fromUser: $fromUser ")
+        // Save to cache
+        AppSettings.addSettingToList(this, bandId.toString(), bandLevel)
+        // Manipulate equalizer band level
         equalizer?.setBandLevel(bandId.toShort(), bandLevel)
     }
 
