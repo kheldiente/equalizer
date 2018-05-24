@@ -166,13 +166,13 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         presetAdapter?.enableAll(checked)
     }
 
-    override fun onBandLevelChanged(bandId: Int, level: Int, fromUser: Boolean) {
+    override fun onBandLevelChanged(bandId: Int, value: Int, fromUser: Boolean) {
         val lowestBandLevel = equalizer?.bandLevelRange?.get(0)
-        val bandLevel = (level.plus(lowestBandLevel!!)).toShort()
+        val bandLevel = (value.plus(lowestBandLevel!!)).toShort()
 
         Log.d(TAG, "bandId: $bandId, bandLevel: $bandLevel, fromUser: $fromUser ")
-        // Save to cache
-        AppSettings.addSettingToList(this, bandId.toString(), bandLevel)
+        // Save to cache. The one saved to cached is the value and NOT the bandLevel
+        AppSettings.addSettingToList(this, bandId.toString(), value)
         // Manipulate equalizer band level
         setBandLevel(bandId.toShort(), bandLevel)
     }

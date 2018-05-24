@@ -70,7 +70,7 @@ class EqualizerView @JvmOverloads constructor(
 
     fun setBandSettings(levels: Map<String, Integer>) {
         bandList
-                .forEach { it.progress = levels.getOrDefault(it.id.toString(), Integer(0)).toInt() }
+                .forEach { it.progress = levels.getOrDefault(it.id.toString(), Integer(maxBand / 2)).toInt() }
                 .apply { bandLevels = levels }
     }
 
