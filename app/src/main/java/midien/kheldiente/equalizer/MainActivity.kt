@@ -88,8 +88,8 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         switch_equalizer.setOnCheckedChangeListener(this)
         switch_equalizer.isChecked = eqEnabled
 
-        presetAdapter = PresetAdapter(this) {
-            AppSettings.setSetting(this, AppSettings.EQUALIZER_PRESET, it.name!!)
+        presetAdapter = PresetAdapter(this) { position: Int, preset: Preset ->
+            setSelectedPreset(position, preset)
         }
         presetAdapter?.enabled = eqEnabled
 
@@ -119,20 +119,33 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         val numberOfBands = equalizer?.numberOfBands
         for(i in 0 until numberOfBands!!) {
             if(cachedBandSettings?.has(i.toString())!!) {
+                val cacheLevel = cachedBandSettings?.getString(i.toString())?.toInt()
                 val lowestBandLevel = equalizer?.bandLevelRange?.get(0)
-                val bandLevel = cachedBandSettings?.getString(i.toString())?.toInt()?.plus(lowestBandLevel!!)?.toShort()
+                val bandLevel = cacheLevel?.plus(lowestBandLevel!!)
 
                 Log.d(TAG, "Cached value => band: $i, level: $bandLevel")
-                setBandLevel(i.toShort(), bandLevel!!)
-
-                view_eq.setBandSettings(
-                    JsonUtil.toMap(cachedBandSettings!!).mapValues {
-                        Log.d(TAG, "setupPreviousSettings")
-                        Integer(it.value.toString())
-                    }
-                )
+                setBandLevel(i.toShort(), bandLevel!!.toShort())
+                view_eq.setBandLevel(i, cacheLevel!!)
             }
         }
+
+    }
+
+    private fun setSelectedPreset(position: Int, preset: Preset) {
+        AppSettings.setSetting(this, AppSettings.EQUALIZER_PRESET, preset.name!!)
+
+        equalizer?.usePreset(position.toShort())
+        // Get the number of frequency bands for this equalizer engine
+        val numberOfBands = equalizer?.numberOfBands
+        val lowestBandLevel = equalizer?.bandLevelRange?.get(0)
+
+        (0 until numberOfBands!!)
+                .forEach {
+                    val band = it
+                    val level = equalizer?.getBandLevel(it.toShort())?.minus(lowestBandLevel!!)
+                    Log.d(TAG, "setSelectedPreset => band: $it, level: $level")
+                    view_eq.setBandLevel(band, level!!)
+                }
 
     }
 

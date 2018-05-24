@@ -15,7 +15,7 @@ class PresetAdapter(private val context: Context,
                     var presetList: ArrayList<Preset> = ArrayList(0),
                     var enabled: Boolean = false,
                     var currentPreset: String = "Normal",
-                    private val listener: (Preset) -> Unit)
+                    private val listener: (Int, Preset) -> Unit)
     : RecyclerView.Adapter<PresetAdapter.PresetViewHolder>() {
 
     val itemViewList = ArrayList<View>(0)
@@ -48,7 +48,7 @@ class PresetAdapter(private val context: Context,
 
     inner class PresetViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
 
-        fun bind(position: Int, preset: Preset, listener: (Preset) -> Unit) = with(itemView) {
+        fun bind(position: Int, preset: Preset, listener: (Int, Preset) -> Unit) = with(itemView) {
             // Save instance for reference
             itemViewList.add(itemView)
             txt_preset.text = preset.name
@@ -61,7 +61,7 @@ class PresetAdapter(private val context: Context,
 
             setOnClickListener {
                 cb_preset_selected.isChecked = !cb_preset_selected.isChecked
-                listener(preset)
+                listener(position, preset)
                 forceUncheck(position)
             }
         }

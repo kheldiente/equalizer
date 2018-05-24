@@ -74,6 +74,11 @@ class EqualizerView @JvmOverloads constructor(
                 .apply { bandLevels = levels }
     }
 
+    fun setBandLevel(band: Int, level: Int) {
+        val bv = bandList.find { band === it.id }
+        bv?.progress = level
+    }
+
     fun setBandListener(bandListener: EventListener) {
         listener = bandListener
     }
