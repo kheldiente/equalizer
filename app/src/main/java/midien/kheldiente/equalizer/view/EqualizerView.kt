@@ -36,6 +36,7 @@ class EqualizerView @JvmOverloads constructor(
     private var thumb = 0
     private var maxBand = 50
     private var bandNames: ArrayList<Integer>? = null
+    private var bandLevels: Map<String, Integer>? = null
 
     var listener: EventListener? = null
 
@@ -65,6 +66,12 @@ class EqualizerView @JvmOverloads constructor(
             bandSize = bands?.size
             bandNames = bands
         }
+    }
+
+    fun setBandSettings(levels: Map<String, Integer>) {
+        bandList
+                .forEach { it.progress = levels.getOrDefault(it.id.toString(), Integer(0)).toInt() }
+                .apply { bandLevels = levels }
     }
 
     fun setBandListener(bandListener: EventListener) {

@@ -16,7 +16,9 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_switch.*
 import midien.kheldiente.equalizer.adapter.PresetAdapter
 import midien.kheldiente.equalizer.data.Preset
+import midien.kheldiente.equalizer.util.JsonUtil
 import midien.kheldiente.equalizer.view.EqualizerView
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener, EqualizerView.EventListener {
 
@@ -26,6 +28,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
     private var mediaPlayer: MediaPlayer? = null
     private var equalizer: Equalizer? = null
     private var presetAdapter: PresetAdapter? = null
+    private var cachedBandSettings: JSONObject? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,10 +52,10 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         setupMedia()
         setupEqualizerView()
         setupPresetList()
+        setupPreviousSettings()
     }
 
     private fun setupEqualizerView() {
-        val cachedBandSettings = AppSettings.getSettingList(this, AppSettings.EQUALIZER_BAND_SETTINGS)
         val numberOfBands = equalizer?.numberOfBands
         val lowestBandLevel = equalizer?.bandLevelRange?.get(0)
         val highestBandLevel = equalizer?.bandLevelRange?.get(1)
@@ -62,11 +65,6 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         Log.d(TAG, "Lowest band level: ${lowestBandLevel?.div(100)}dB")
         Log.d(TAG, "Highest band level: ${highestBandLevel?.div(100)}dB")
         Log.d(TAG, "Max level: ${max}dB")
-
-        for(i in 0 until numberOfBands!!) {
-            val level = cachedBandSettings.getString(i.toString())
-            Log.d(TAG, "Cached value => band: $i, level: $level")
-        }
 
         var bands = ArrayList<Integer>(0)
         // Get center frequency for each band
@@ -115,6 +113,29 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
                 }
     }
 
+    private fun setupPreviousSettings() {
+        cachedBandSettings = AppSettings.getSettingList(this, AppSettings.EQUALIZER_BAND_SETTINGS)
+
+        val numberOfBands = equalizer?.numberOfBands
+        for(i in 0 until numberOfBands!!) {
+            if(cachedBandSettings?.has(i.toString())!!) {
+                val lowestBandLevel = equalizer?.bandLevelRange?.get(0)
+                val bandLevel = cachedBandSettings?.getString(i.toString())?.toInt()?.plus(lowestBandLevel!!)?.toShort()
+
+                Log.d(TAG, "Cached value => band: $i, level: $bandLevel")
+                setBandLevel(i.toShort(), bandLevel!!)
+
+                view_eq.setBandSettings(
+                    JsonUtil.toMap(cachedBandSettings!!).mapValues {
+                        Log.d(TAG, "setupPreviousSettings")
+                        Integer(it.value.toString())
+                    }
+                )
+            }
+        }
+
+    }
+
     private fun startMediaPlayer() {
         mediaPlayer?.isPlaying?.let {
             // Execute if not null
@@ -153,7 +174,11 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         // Save to cache
         AppSettings.addSettingToList(this, bandId.toString(), bandLevel)
         // Manipulate equalizer band level
-        equalizer?.setBandLevel(bandId.toShort(), bandLevel)
+        setBandLevel(bandId.toShort(), bandLevel)
+    }
+
+    private fun setBandLevel(bandId: Short, level: Short) {
+        equalizer?.setBandLevel(bandId, level)
     }
 
     private fun setupPermissions() {
