@@ -52,6 +52,7 @@ class PresetAdapter(private val context: Context,
             // Save instance for reference
             itemViewList.add(itemView)
             txt_preset.text = preset.name
+            itemView.isEnabled = enabled
             txt_preset.isEnabled = enabled
             cb_preset_selected.isEnabled = enabled
 
