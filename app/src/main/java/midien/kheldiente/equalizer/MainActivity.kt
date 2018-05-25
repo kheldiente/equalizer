@@ -38,11 +38,16 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
     }
 
     private fun setupMedia() {
+        val eqEnabled = AppSettings.getSettingAsBoolean(this, AppSettings.EQUALIZER_ENABLED)
         mediaPlayer = MediaPlayer.create(this, R.raw.htmlthesong)
         mediaPlayer?.isLooping = true
 
         equalizer = Equalizer(0, mediaPlayer?.audioSessionId!!)
-        equalizer?.enabled = true
+        equalizer?.enabled = eqEnabled
+    }
+
+    private fun enableEqualizer(enable: Boolean) {
+        equalizer?.enabled = enable
     }
 
     private fun init() {
@@ -176,6 +181,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
 
     override fun onCheckedChanged(compoundButton: CompoundButton?, checked: Boolean) {
         AppSettings.setSetting(this, AppSettings.EQUALIZER_ENABLED, checked)
+        enableEqualizer(checked)
         presetAdapter?.enableAll(checked)
     }
 
