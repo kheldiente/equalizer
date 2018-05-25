@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         init()
-        setupPermissions()
+        startMediaPlayer()
     }
 
     private fun setupMedia() {
@@ -194,20 +194,6 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         equalizer?.setBandLevel(bandId, level)
     }
 
-    private fun setupPermissions() {
-        // If we don't have the record audio permission...
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-            // And if we're on SDK M or later...
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                // Ask again, nicely, for the permissions.
-                val permissionsWeNeed = arrayOf(Manifest.permission.RECORD_AUDIO)
-                requestPermissions(permissionsWeNeed, PERMISSION_RECORD_AUDIO_REQUEST_CODE)
-            }
-        } else {
-            startMediaPlayer()
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         startMediaPlayer()
@@ -216,24 +202,6 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
     override fun onPause() {
         super.onPause()
         stopMediaPlayer()
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        when (requestCode) {
-            PERMISSION_RECORD_AUDIO_REQUEST_CODE -> {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // The permission was granted! Start up the visualizer!
-                    startMediaPlayer()
-                } else {
-                    Toast.makeText(this, "Permission for audio not granted. Equalizer can't run.", Toast.LENGTH_LONG).show()
-                    finish()
-                    // The permission was denied, so we can show a message why we can't run the app
-                    // and then close the app.
-                }
-            }
-        }
-        // Other permissions could go down here
     }
 
 }
