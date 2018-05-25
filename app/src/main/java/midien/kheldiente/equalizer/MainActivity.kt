@@ -36,20 +36,6 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         init()
         startMediaPlayer()
     }
-
-    private fun setupMedia() {
-        val eqEnabled = AppSettings.getSettingAsBoolean(this, AppSettings.EQUALIZER_ENABLED)
-        mediaPlayer = MediaPlayer.create(this, R.raw.htmlthesong)
-        mediaPlayer?.isLooping = true
-
-        equalizer = Equalizer(0, mediaPlayer?.audioSessionId!!)
-        equalizer?.enabled = eqEnabled
-    }
-
-    private fun enableEqualizer(enable: Boolean) {
-        equalizer?.enabled = enable
-    }
-
     private fun init() {
         setSupportActionBar(tb_app)
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -58,6 +44,15 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         setupEqualizerView()
         setupPresetList()
         setupPreviousSettings()
+    }
+
+    private fun setupMedia() {
+        val eqEnabled = AppSettings.getSettingAsBoolean(this, AppSettings.EQUALIZER_ENABLED)
+        mediaPlayer = MediaPlayer.create(this, R.raw.htmlthesong)
+        mediaPlayer?.isLooping = true
+
+        equalizer = Equalizer(0, mediaPlayer?.audioSessionId!!)
+        equalizer?.enabled = eqEnabled
     }
 
     private fun setupEqualizerView() {
@@ -97,7 +92,6 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
             setSelectedPreset(position, preset)
         }
         presetAdapter?.enabled = eqEnabled
-
         presetAdapter?.currentPreset = eqPreset
 
         list_preset.layoutManager = LinearLayoutManager(this)
@@ -134,6 +128,10 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
             }
         }
 
+    }
+
+    private fun enableEqualizer(enable: Boolean) {
+        equalizer?.enabled = enable
     }
 
     private fun setSelectedPreset(position: Int, preset: Preset) {
