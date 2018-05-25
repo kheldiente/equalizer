@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
     private var equalizer: Equalizer? = null
     private var presetAdapter: PresetAdapter? = null
     private var cachedBandSettings: JSONObject? = null
+    private val presetList = ArrayList<Preset>(0)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,7 +102,6 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
 
         val presets = equalizer?.numberOfPresets
         // Get preset names
-        val presetList = ArrayList<Preset>(0)
         (0 until presets!!)
                 .map { equalizer?.getPresetName(it.toShort()) }
                 .mapTo(presetList) { Preset(it) }
@@ -135,21 +136,31 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
     }
 
     private fun setSelectedPreset(position: Int, preset: Preset) {
-        AppSettings.setSetting(this, AppSettings.EQUALIZER_PRESET, preset.name!!)
+        var currentEqPreset = AppSettings.getSettingAsString(this, AppSettings.EQUALIZER_PRESET)
 
-        equalizer?.usePreset(position.toShort())
-        // Get the number of frequency bands for this equalizer engine
-        val numberOfBands = equalizer?.numberOfBands
-        val lowestBandLevel = equalizer?.bandLevelRange?.get(0)
+        if(currentEqPreset !== preset.name) {
+            AppSettings.setSetting(this, AppSettings.EQUALIZER_PRESET, preset.name!!)
 
-        (0 until numberOfBands!!)
-                .forEach {
-                    val band = it
-                    val level = equalizer?.getBandLevel(it.toShort())?.minus(lowestBandLevel!!)
-                    Log.d(TAG, "setSelectedPreset => band: $it, level: $level")
-                    view_eq.setBandLevel(band, level!!)
-                }
+            val presets = equalizer?.numberOfPresets
+            Log.d(TAG, "setSelectedPreset => presets: $presets, position: $position")
+            if(position < presets!!.toInt()) {
+                equalizer?.usePreset(position.toShort())
+                // Get the number of frequency bands for this equalizer engine
+                val numberOfBands = equalizer?.numberOfBands
+                val lowestBandLevel = equalizer?.bandLevelRange?.get(0)
 
+                (0 until numberOfBands!!)
+                        .forEach {
+                            val band = it
+                            val level = equalizer?.getBandLevel(it.toShort())?.minus(lowestBandLevel!!)
+                            Log.d(TAG, "setSelectedPreset => band: $it, level: $level")
+                            view_eq.setBandLevel(band, level!!)
+                        }
+            } else {
+                presetAdapter?.currentPreset = preset.name
+                presetAdapter?.check(position)
+            }
+        }
     }
 
     private fun startMediaPlayer() {
@@ -192,6 +203,14 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         AppSettings.addSettingToList(this, bandId.toString(), value)
         // Manipulate equalizer band level
         setBandLevel(bandId.toShort(), bandLevel)
+
+        // If user suddenly move the band levels, set preset as 'User'
+        if(fromUser) {
+            // Assign selected preset as 'User'
+            val position = presetList.indexOf(presetList.filter { preset -> preset.name.equals("User") }[0])
+            val preset = presetList.filter { preset -> preset.name.equals("User") }[0]
+            setSelectedPreset(position, preset)
+        }
     }
 
     private fun setBandLevel(bandId: Short, level: Short) {

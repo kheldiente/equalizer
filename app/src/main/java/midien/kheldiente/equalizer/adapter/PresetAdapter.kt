@@ -50,6 +50,13 @@ class PresetAdapter(private val context: Context,
         }
     }
 
+    fun check(position: Int) {
+        itemViewList.forEachIndexed { index, view ->
+            val checkBox = view.findViewById<CheckBox>(R.id.cb_preset_selected)
+            checkBox.isChecked = index === position
+        }
+    }
+
     inner class PresetViewHolder(itemView: View)
         : RecyclerView.ViewHolder(itemView) {
 
@@ -71,6 +78,9 @@ class PresetAdapter(private val context: Context,
             // Set listeners
             setOnClickListener {
                 applyChanges(position, listener, cb_preset_selected, preset)
+            }
+            cb_preset_selected.setOnCheckedChangeListener { _, _ ->
+                // Override and do nothing
             }
         }
 
