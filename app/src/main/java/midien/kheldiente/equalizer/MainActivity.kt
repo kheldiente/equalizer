@@ -31,7 +31,6 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
     private var cachedBandSettings: JSONObject? = null
     private val presetList = ArrayList<Preset>(0)
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -100,6 +99,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
         list_preset.isNestedScrollingEnabled = true
         list_preset.adapter = presetAdapter
 
+        presetList.clear()
         val presets = equalizer?.numberOfPresets
         // Get preset names
         (0 until presets!!)
