@@ -1,14 +1,9 @@
 package midien.kheldiente.equalizer
 
-import android.Manifest
 import android.media.MediaPlayer
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
-import android.content.pm.PackageManager
 import android.media.audiofx.Equalizer
-import android.os.Build
-import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.widget.CompoundButton
@@ -16,14 +11,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_switch.*
 import midien.kheldiente.equalizer.adapter.PresetAdapter
 import midien.kheldiente.equalizer.data.Preset
-import midien.kheldiente.equalizer.util.JsonUtil
 import midien.kheldiente.equalizer.view.EqualizerView
 import org.json.JSONObject
 
 class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener, EqualizerView.EventListener {
 
     private val TAG = MainActivity::class.java.simpleName
-    private val PERMISSION_RECORD_AUDIO_REQUEST_CODE = 88
 
     private var mediaPlayer: MediaPlayer? = null
     private var equalizer: Equalizer? = null
