@@ -61,6 +61,9 @@ freeline_project_description.json
 !app/src/main/res/drawable-v24/*xml
 !app/src/main/res/layout/*xml
 !app/src/main/res/menu/*xml
+!app/src/main/res/color/*xml
+!app/src/main/res/font/*xml
+!app/src/main/res/raw/*mp3
 !app/src/main/res/mipmap-anydpi-v26/*xml
 !app/src/main/res/mipmap-hdpi/*xml
 !app/src/main/res/mipmap-mdpi/*xml
